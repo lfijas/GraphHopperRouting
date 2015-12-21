@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="files">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../graphhopper/core/files/N43E007.hgt.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../graphhopper/core/files/N52E008.hgt.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../graphhopper/core/files/N48W125.hgt.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../graphhopper/core/files/S29W072.hgt.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../graphhopper/core/files/intellij-settings.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../graphhopper/core/files/N50E011.hgt.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../graphhopper/core/files/N55W003.hgt.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../graphhopper/core/files/N49E011.hgt.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

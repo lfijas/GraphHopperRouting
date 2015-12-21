@@ -1,0 +1,114 @@
+import com.graphhopper.util.PointList;
+import com.graphhopper.util.shapes.GHPoint3D;
+
+import java.awt.geom.Point2D;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by lukasz on 27.10.15.
+ */
+public class DataReader {
+
+    private static final String connAddr = "jdbc:mysql://localhost/yanosik?user=root&password=admin";
+
+    private Connection conn;
+    private PreparedStatement preparedStatement;
+    private ResultSet resultSet;
+    private List<Point2D.Double> resultPointsList;
+
+    public List<Point2D.Double> readDb(int id) {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+
+            conn = DriverManager.getConnection(connAddr);
+
+            //statement = conn.createStatement();
+            //resultSet = statement.executeQuery("select * from yanosik.Traffic where id = 2 order by Date");
+
+            preparedStatement = conn.prepareStatement("select * from yanosik.Traffic where id = ? order by Date");
+            preparedStatement.setInt(1, id);
+            resultSet = preparedStatement.executeQuery();
+
+            resultPointsList = new ArrayList<Point2D.Double>();
+
+            while ((resultSet.next())) {
+                Double latitude = resultSet.getDouble("Latitude");
+                Double longitude = resultSet.getDouble("Longitude");
+                Point2D.Double point = new Point2D.Double(latitude, longitude);
+                resultPointsList.add(point);
+            }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return resultPointsList;
+
+    }
+
+    public void saveOptimalRouteIntoDb(int routeId, PointList optimalRoute) {
+
+        deleteOptimalRouteFromDb(routeId);
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection(connAddr);
+            String sql = "insert into yanosik.Optimal_routes (id, latitude, longitude) values (?, ?, ?)";
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, routeId);
+            for (GHPoint3D point : optimalRoute) {
+                preparedStatement.setDouble(2, point.getLat());
+                preparedStatement.setDouble(3, point.getLon());
+                preparedStatement.executeUpdate();
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+    }
+
+    private void deleteOptimalRouteFromDb(int routeId) {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection(connAddr);
+            String sql = "delete from Optimal_routes where id = ?";
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, routeId);
+            preparedStatement.executeUpdate();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+
+    }
+
+    private void close() {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
