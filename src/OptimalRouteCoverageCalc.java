@@ -73,22 +73,59 @@ public class OptimalRouteCoverageCalc {
             Point2D.Double point = realRoute.get(i);
             double pointLat = point.getX();
             double pointLong = point.getY();
-            boolean isEndOptimalRoute = true;
-            for (GHPoint3D p : optimalRoute) {
-                double pLat = p.getLat();
-                double pLong = p.getLon();
-                if (pointLat >= pLat - LAT_MARGIN && pointLat <= pLat + LAT_MARGIN
-                        && pointLong >= pLong- LONG_MARGIN && pointLong <= pLong + LONG_MARGIN) {
-                    counter++;
-                    isEndOptimalRoute = false;
-                    break;
+
+            double distance = -1;
+
+            for (int ii = 0; ii < optimalRoute.size() - 1; ii++) {
+                double beginningPointLat = optimalRoute.getLat(ii);
+                double beginningPointLong = optimalRoute.getLon(ii);
+
+                double endPointLat = optimalRoute.getLat(ii + 1);
+                double endPointLong = optimalRoute.getLon(ii + 1);
+
+                //line given by equation ax + by + c = 0
+                double a = beginningPointLat - endPointLat;
+                double b = endPointLong - beginningPointLong;
+                double c = endPointLat * beginningPointLong - beginningPointLat * endPointLong;
+
+                //line vertical to given line: (-b/a)x + y - d = 0
+                double a2 = (-1) * b / a;
+                double d = pointLat + a2 * pointLong;
+
+                //determinants
+                double w = a - b * a2;
+                double wx = (-1) * c - b * d;
+                double wy = a * d + c * a2;
+
+                if (w != 0) {
+                    double x = wx / w;
+                    double y = wy / w;
+
+                    //check if point is on defined line segment
+                    if ((x >= endPointLong && x <= beginningPointLong ||
+                            x >= beginningPointLong && x <= endPointLong)
+                            &&
+                            (y >= endPointLat && y <= beginningPointLat ||
+                                y >= beginningPointLat && y <= endPointLat)) {
+
+                        //then calculate the distance from point describing real route to the line describing optimal
+                        // route
+                        double tempDistance = Math.abs(a * pointLong + b * pointLat + c)
+                                / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+
+                        if (distance == -1 || tempDistance < distance) {
+                            distance = tempDistance;
+                        }
+
+                    }
                 }
             }
-//            if (isEndOptimalRoute) {;
-//                break;
-//            }
+            System.out.println("Distance: " + distance);
+            if (distance != -1 && distance <= LAT_MARGIN) {
+                counter++;
+            }
         }
-        //System.out.println("Number of points on optimal route: " + counter + "/" + realRoute.size());
+        System.out.println("Number of points on optimal route: " + counter + "/" + realRoute.size());
         return (double) counter/realRoute.size();
     }
 
