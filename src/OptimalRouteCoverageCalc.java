@@ -69,10 +69,20 @@ public class OptimalRouteCoverageCalc {
 
     public double calculateOptimalRouteCoverage(List<Point2D.Double> realRoute, PointList optimalRoute) {
         int counter = 1;
+        double weightedCounter = 1;
+        double routeLength = 0;
         for (int i = 1; i < realRoute.size(); i++) {
             Point2D.Double point = realRoute.get(i);
             double pointLat = point.getX();
             double pointLong = point.getY();
+
+            Point2D.Double prevPoint = realRoute.get(i - 1);
+            double prevPointLat = point.getX();
+            double prevPointLong = point.getY();
+
+            double distanceFromPrevPoint = Math.sqrt(Math.pow(pointLat - prevPointLat, 2)
+                    + Math.pow(pointLong - prevPointLat, 2));
+            routeLength += distanceFromPrevPoint;
 
             double distance = -1;
 
@@ -123,8 +133,10 @@ public class OptimalRouteCoverageCalc {
             System.out.println("Distance: " + distance);
             if (distance != -1 && distance <= LAT_MARGIN) {
                 counter++;
+                weightedCounter += distanceFromPrevPoint;
             }
         }
+        System.out.println("Optimal route weighted coverage: " + weightedCounter / routeLength);
         System.out.println("Number of points on optimal route: " + counter + "/" + realRoute.size());
         return (double) counter/realRoute.size();
     }
