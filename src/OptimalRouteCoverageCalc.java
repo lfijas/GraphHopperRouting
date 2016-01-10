@@ -21,7 +21,7 @@ public class OptimalRouteCoverageCalc {
 
     /*
     latitude: 1 degree ~ 111 km
-    longitude: (45th degree) ~ 78km
+    longitude: long = 111km * cos(lat) (45th degree) ~ 78km
      */
     private static final double LAT_MARGIN = 0.0005; // ~ 100m
     private static final double LONG_MARGIN = 0.0007; // ~ 100m
@@ -69,7 +69,7 @@ public class OptimalRouteCoverageCalc {
 
     public double calculateOptimalRouteCoverage(List<Point2D.Double> realRoute, PointList optimalRoute) {
         int counter = 1;
-        double weightedCounter = 1;
+        double weightedCounter = 0;
         double routeLength = 0;
         for (int i = 1; i < realRoute.size(); i++) {
             Point2D.Double point = realRoute.get(i);
@@ -77,11 +77,11 @@ public class OptimalRouteCoverageCalc {
             double pointLong = point.getY();
 
             Point2D.Double prevPoint = realRoute.get(i - 1);
-            double prevPointLat = point.getX();
-            double prevPointLong = point.getY();
+            double prevPointLat = prevPoint.getX();
+            double prevPointLong = prevPoint.getY();
 
             double distanceFromPrevPoint = Math.sqrt(Math.pow(pointLat - prevPointLat, 2)
-                    + Math.pow(pointLong - prevPointLat, 2));
+                    + Math.pow((pointLong - prevPointLong) * Math.cos(pointLat), 2));
             routeLength += distanceFromPrevPoint;
 
             double distance = -1;
