@@ -35,6 +35,12 @@ public class GraphHopperRoutingMain {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(button);
 
+        JButton calculateBtn = new JButton("Calculate");
+        JPanel calculateBtnPanel = new JPanel();
+        calculateBtnPanel.add(calculateBtn);
+
+
+
         JLabel infoLabel = new JLabel("Zakres id przejazdów: od 1 do 42829");
         JPanel infoPanel = new JPanel();
         infoPanel.add(infoLabel);
@@ -45,11 +51,12 @@ public class GraphHopperRoutingMain {
         frame.pack();
         frame.setSize(300, 150);
         frame.setVisible(true);
-        frame.setLayout(new GridLayout(3, 1));
+        frame.setLayout(new GridLayout(4, 1));
 
         frame.add(inputDataPanel);
         frame.add(infoPanel);
         frame.add(buttonPanel);
+        frame.add(calculateBtnPanel);
 
         button.addActionListener(new ActionListener() {
             @Override
@@ -93,6 +100,32 @@ public class GraphHopperRoutingMain {
                 }
             }
         });
+
+        calculateBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                DataReader reader = new DataReader();
+                OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
+
+                for (int id = 1; id < 1000; id++) {
+
+                    List<Point2D.Double> route = reader.readDb(id);
+
+                    if (route.size() > 0) {
+                        Point2D.Double startPoint = route.get(0);
+                        Point2D.Double finishPoint = route.get(route.size() - 1);
+
+                        PointList optimalRoute = optimalRouteCoverageCalc.findOptimalRoute(startPoint, finishPoint);
+                        if (optimalRoute != null) {
+                            reader.saveOptimalRouteIntoDb(id, optimalRoute);
+                            System.out.println("Route #" + id);
+                            double pointsCoverage = optimalRouteCoverageCalc.calculateOptimalRouteCoverage(route, optimalRoute);
+                            System.out.println("PointsCoverage: " + pointsCoverage);
+                        }
+                    }
+                }
+            }
+    });
 
         /*GraphHopper hopper = new GraphHopper().forServer();
         hopper.setOSMFile(OSM_FILE_PATH);

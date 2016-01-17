@@ -130,7 +130,6 @@ public class OptimalRouteCoverageCalc {
                     }
                 }
             }
-            System.out.println("Distance: " + distance);
             if (distance != -1 && distance <= LAT_MARGIN) {
                 counter++;
                 weightedCounter += distanceFromPrevPoint;
