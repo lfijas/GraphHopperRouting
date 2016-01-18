@@ -7,6 +7,10 @@ import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint3D;
 
 import java.awt.geom.Point2D;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Locale;
 
@@ -134,6 +138,15 @@ public class OptimalRouteCoverageCalc {
                 counter++;
                 weightedCounter += distanceFromPrevPoint;
             }
+        }
+        try {
+            PrintWriter printWriter = new PrintWriter(new FileWriter("/home/lukasz/Pulpit/Results/coverage_results.txt", true));
+            printWriter.println(weightedCounter / routeLength);
+            printWriter.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         System.out.println("Optimal route weighted coverage: " + weightedCounter / routeLength);
         System.out.println("Number of points on optimal route: " + counter + "/" + realRoute.size());
