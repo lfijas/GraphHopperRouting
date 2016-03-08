@@ -18,7 +18,7 @@ public class DataReader {
     private ResultSet resultSet;
     private List<Point2D.Double> resultPointsList;
 
-    public List<Point2D.Double> readDb(int id) {
+    public List<Point2D.Double> readDb(int id, String tableName) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
@@ -27,7 +27,8 @@ public class DataReader {
             //statement = conn.createStatement();
             //resultSet = statement.executeQuery("select * from yanosik.Traffic where id = 2 order by Date");
 
-            preparedStatement = conn.prepareStatement("select * from yanosik.Traffic where id = ? order by Date");
+            preparedStatement = conn.prepareStatement("select * from yanosik." + tableName
+                    + " where id = ? order by Date");
             preparedStatement.setInt(1, id);
             resultSet = preparedStatement.executeQuery();
 

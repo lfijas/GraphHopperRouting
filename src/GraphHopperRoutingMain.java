@@ -77,7 +77,7 @@ public class GraphHopperRoutingMain {
                     DataReader reader = new DataReader();
                     OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
 
-                    List<Point2D.Double> route = reader.readDb(id);
+                    List<Point2D.Double> route = reader.readDb(id, Consts.TRAFFIC_TABLE);
 
                     if (route.size() > 0) {
                         Point2D.Double startPoint = route.get(0);
@@ -109,9 +109,9 @@ public class GraphHopperRoutingMain {
 
                 for (int id = 1; id < 1000; id++) {
 
-                    List<Point2D.Double> route = reader.readDb(id);
+                    List<Point2D.Double> route = reader.readDb(id, Consts.TRAFFIC_WITHOUT_PARKING_TABLE);
 
-                    if (route.size() > 0) {
+                    if (route.size() > 10) {
                         Point2D.Double startPoint = route.get(0);
                         Point2D.Double finishPoint = route.get(route.size() - 1);
 

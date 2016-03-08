@@ -47,7 +47,7 @@ public class OptimalRouteCoverageCalc {
                 .setWeighting("fastest")
                 .setVehicle("car")
                 .setLocale(Locale.US)
-                .setAlgorithm(AlgorithmOptions.ASTAR_BI);
+                .setAlgorithm(AlgorithmOptions.DIJKSTRA_BI);
 
         GHResponse rsp = hopper.route(req);
 
@@ -140,8 +140,8 @@ public class OptimalRouteCoverageCalc {
             }
         }
         try {
-            PrintWriter printWriter = new PrintWriter(new FileWriter("/home/lukasz/Pulpit/Results/coverage_results.txt", true));
-            printWriter.println(weightedCounter / routeLength);
+            PrintWriter printWriter = new PrintWriter(new FileWriter("/home/lukasz/Pulpit/Results/dijkstra_coverage_results_without_parking_long.txt", true));
+            printWriter.println(weightedCounter / routeLength + " " + routeLength);
             printWriter.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
