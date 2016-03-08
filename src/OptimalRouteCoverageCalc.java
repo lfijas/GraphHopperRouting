@@ -78,24 +78,24 @@ public class OptimalRouteCoverageCalc {
         for (int i = 1; i < realRoute.size(); i++) {
             Point2D.Double point = realRoute.get(i);
             double pointLat = point.getX();
-            double pointLong = point.getY();
+            double pointLong = point.getY() * Math.cos(Math.toRadians(pointLat));
 
             Point2D.Double prevPoint = realRoute.get(i - 1);
             double prevPointLat = prevPoint.getX();
-            double prevPointLong = prevPoint.getY();
+            double prevPointLong = prevPoint.getY() * Math.cos(Math.toRadians(prevPointLat));
 
             double distanceFromPrevPoint = Math.sqrt(Math.pow(pointLat - prevPointLat, 2)
-                    + Math.pow((pointLong - prevPointLong) * Math.cos(pointLat), 2));
+                    + Math.pow((pointLong - prevPointLong), 2));
             routeLength += distanceFromPrevPoint;
 
             double distance = -1;
 
             for (int ii = 0; ii < optimalRoute.size() - 1; ii++) {
                 double beginningPointLat = optimalRoute.getLat(ii);
-                double beginningPointLong = optimalRoute.getLon(ii);
+                double beginningPointLong = optimalRoute.getLon(ii) * Math.cos(Math.toRadians(beginningPointLat));
 
                 double endPointLat = optimalRoute.getLat(ii + 1);
-                double endPointLong = optimalRoute.getLon(ii + 1);
+                double endPointLong = optimalRoute.getLon(ii + 1) * Math.cos(Math.toRadians(endPointLat));
 
                 //line given by equation ax + by + c = 0
                 double a = beginningPointLat - endPointLat;
@@ -140,7 +140,7 @@ public class OptimalRouteCoverageCalc {
             }
         }
         try {
-            PrintWriter printWriter = new PrintWriter(new FileWriter("/home/lukasz/Pulpit/Results/dijkstra_coverage_results_without_parking_long.txt", true));
+            PrintWriter printWriter = new PrintWriter(new FileWriter(Consts.OPTIMAL_COVERAGE_RESULTS_FILE, true));
             printWriter.println(weightedCounter / routeLength + " " + routeLength);
             printWriter.close();
         } catch (FileNotFoundException e) {
