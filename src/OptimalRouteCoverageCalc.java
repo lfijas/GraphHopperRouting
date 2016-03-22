@@ -19,9 +19,12 @@ import java.util.Locale;
  */
 public class OptimalRouteCoverageCalc {
 
-    private static final String OSM_FILE_PATH = "/home/lukasz/Pulpit/Magisterskie/Praca_magisterska/GraphHopper/wielkopolskie-latest.osm.pbf";
-    private static final String CH_GRAPH_FOLDER = "/home/lukasz/Pulpit/Magisterskie/Praca_magisterska/GraphHopper/Dev/GraphHopper_routing/generated_ch_graph";
-    private static final String GRAPH_FOLDER = "/home/lukasz/Pulpit/Magisterskie/Praca_magisterska/GraphHopper/Dev/GraphHopper_routing/generated_graph";
+    private static final String OSM_FILE_PATH
+            = "/home/lukasz/Pulpit/Magisterskie/Praca_magisterska/GraphHopper/wielkopolskie-latest.osm.pbf";
+    private static final String CH_GRAPH_FOLDER
+            = "/home/lukasz/Pulpit/Magisterskie/Praca_magisterska/GraphHopper/Dev/GraphHopper_routing/generated_ch_graph";
+    private static final String GRAPH_FOLDER
+            = "/home/lukasz/Pulpit/Magisterskie/Praca_magisterska/GraphHopper/Dev/GraphHopper_routing/generated_graph";
 
     /*
     latitude: 1 degree ~ 111 km
@@ -31,20 +34,21 @@ public class OptimalRouteCoverageCalc {
     private static final double LONG_MARGIN = 0.0007; // ~ 100m
 
 
-    public PointList findOptimalRoute(Point2D.Double startPoint, Point2D.Double finishPoint) {
+    public PointList findOptimalRoute(Point2D.Double startPoint, Point2D.Double finishPoint, String chosenWeighting) {
 
         GraphHopper hopper = new GraphHopper().forServer();
         hopper.setOSMFile(OSM_FILE_PATH);
 
-        hopper.setGraphHopperLocation(CH_GRAPH_FOLDER);
+        hopper.setGraphHopperLocation(GRAPH_FOLDER);
         hopper.setEncodingManager(new EncodingManager("car"));
+        hopper.setCHEnable(false);
         hopper.importOrLoad();
 
         //System.out.println("StartPoint - Latitude: " + startPoint.getX() + ", Long: " + startPoint.getY());
         //System.out.println("EndPoint - Latitude: " + finishPoint.getX() + ", Long: " + finishPoint.getY());
 
         GHRequest req = new GHRequest(startPoint.getX(), startPoint.getY(), finishPoint.getX(), finishPoint.getY())
-                .setWeighting("fastest")
+                .setWeighting(chosenWeighting)
                 .setVehicle("car")
                 .setLocale(Locale.US)
                 .setAlgorithm(AlgorithmOptions.DIJKSTRA_BI);
