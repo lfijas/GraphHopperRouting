@@ -16,6 +16,7 @@ public class Gui {
 
     private JRadioButton mFastestRadioBtn;
     private JRadioButton mShortestRadioBtn;
+    private JRadioButton mCustomTrafficRadioBtn;
 
     public Gui() {
 
@@ -42,19 +43,23 @@ public class Gui {
         ButtonGroup weightingButtonGroup = new ButtonGroup();
         mFastestRadioBtn = new JRadioButton("Fastest");
         mShortestRadioBtn = new JRadioButton("Shortest");
+        mCustomTrafficRadioBtn = new JRadioButton("Consider current traffic");
         weightingButtonGroup.add(mFastestRadioBtn);
         weightingButtonGroup.add(mShortestRadioBtn);
+        weightingButtonGroup.add(mCustomTrafficRadioBtn);
         JPanel weightingPanel = new JPanel();
-        weightingPanel.setBorder(BorderFactory.createTitledBorder("Set weighting"));
+        weightingPanel.setBorder(BorderFactory.createTitledBorder("Route options"));
         weightingPanel.setOpaque(true);
+        weightingPanel.setLayout(new GridLayout(3, 1));
         weightingPanel.add(mFastestRadioBtn);
         weightingPanel.add(mShortestRadioBtn);
+        weightingPanel.add(mCustomTrafficRadioBtn);
 
         //frame.getContentPane().add(label);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setSize(300, 250);
+        frame.setSize(300, 400);
         frame.setVisible(true);
         frame.setLayout(new GridLayout(5, 1));
 
@@ -90,7 +95,7 @@ public class Gui {
                         Point2D.Double finishPoint = route.get(route.size() - 1);
 
                         PointList optimalRoute = optimalRouteCoverageCalc
-                                .findOptimalRoute(startPoint, finishPoint, Consts.FIND_FASTEST_OPTIMAL_ROUTE);
+                                .findOptimalRoute(startPoint, finishPoint, Consts.FASTEST);
                         if (optimalRoute != null) {
                             reader.saveOptimalRouteIntoDb(id, optimalRoute);
                             double pointsCoverage = optimalRouteCoverageCalc.calculateOptimalRouteCoverage(route, optimalRoute);
@@ -112,8 +117,9 @@ public class Gui {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 String chosenWeighting = getChosenWeighting();
-                if (Consts.FIND_FASTEST_OPTIMAL_ROUTE.equals(chosenWeighting) ||
-                        Consts.FIND_SHORTEST_OPTIMAL_ROUTE.equals(chosenWeighting)) {
+                if (Consts.FASTEST.equals(chosenWeighting)
+                        || Consts.SHORTEST.equals(chosenWeighting)
+                        || Consts.CURRENT_TRAFFIC.equals(chosenWeighting)) {
                     DataReader reader = new DataReader();
                     OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
 
@@ -145,9 +151,11 @@ public class Gui {
     private String getChosenWeighting() {
         String chosenWeighting = null;
         if (mFastestRadioBtn.isSelected()) {
-            chosenWeighting = Consts.FIND_FASTEST_OPTIMAL_ROUTE;
+            chosenWeighting = Consts.FASTEST;
         } else if (mShortestRadioBtn.isSelected()) {
-            chosenWeighting = Consts.FIND_SHORTEST_OPTIMAL_ROUTE;
+            chosenWeighting = Consts.SHORTEST;
+        } else if (mCustomTrafficRadioBtn.isSelected()) {
+            chosenWeighting = Consts.CURRENT_TRAFFIC;
         }
         return chosenWeighting;
     }

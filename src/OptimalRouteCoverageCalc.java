@@ -1,6 +1,5 @@
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
-import com.graphhopper.GraphHopper;
 import com.graphhopper.routing.AlgorithmOptions;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.PointList;
@@ -36,7 +35,7 @@ public class OptimalRouteCoverageCalc {
 
     public PointList findOptimalRoute(Point2D.Double startPoint, Point2D.Double finishPoint, String chosenWeighting) {
 
-        GraphHopper hopper = new GraphHopper().forServer();
+        MyGraphHopper hopper = new MyGraphHopper();
         hopper.setOSMFile(OSM_FILE_PATH);
 
         hopper.setGraphHopperLocation(GRAPH_FOLDER);
