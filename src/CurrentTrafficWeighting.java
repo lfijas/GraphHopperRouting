@@ -7,6 +7,8 @@ import com.graphhopper.util.EdgeIteratorState;
  */
 public class CurrentTrafficWeighting extends AbstractWeighting {
 
+    protected final static double SPEED_CONV = 3.6;
+
     public CurrentTrafficWeighting(FlagEncoder encoder) {
         super(encoder);
         System.out.println("Current traffic weighting");
@@ -19,7 +21,16 @@ public class CurrentTrafficWeighting extends AbstractWeighting {
 
     @Override
     public double calcWeight(EdgeIteratorState edgeState, boolean reverse, int prevOrNextEdgeId) {
-        return edgeState.getDistance();
+
+        double speed = reverse ? flagEncoder.getReverseSpeed(edgeState.getFlags()) : flagEncoder.getSpeed(edgeState.getFlags());
+        if (speed == 0)
+            return Double.POSITIVE_INFINITY;
+
+        double time = edgeState.getDistance() / speed * SPEED_CONV;
+
+        return time;
+
+        //return edgeState.getDistance();
     }
 
     @Override

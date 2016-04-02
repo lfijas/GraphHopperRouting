@@ -1,7 +1,6 @@
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.routing.AlgorithmOptions;
-import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint3D;
 
@@ -18,13 +17,6 @@ import java.util.Locale;
  */
 public class OptimalRouteCoverageCalc {
 
-    private static final String OSM_FILE_PATH
-            = "/home/lukasz/Pulpit/Magisterskie/Praca_magisterska/GraphHopper/wielkopolskie-latest.osm.pbf";
-    private static final String CH_GRAPH_FOLDER
-            = "/home/lukasz/Pulpit/Magisterskie/Praca_magisterska/GraphHopper/Dev/GraphHopper_routing/generated_ch_graph";
-    private static final String GRAPH_FOLDER
-            = "/home/lukasz/Pulpit/Magisterskie/Praca_magisterska/GraphHopper/Dev/GraphHopper_routing/generated_graph";
-
     /*
     latitude: 1 degree ~ 111 km
     longitude: long = 111km * cos(lat) (45th degree) ~ 78km
@@ -33,15 +25,8 @@ public class OptimalRouteCoverageCalc {
     private static final double LONG_MARGIN = 0.0007; // ~ 100m
 
 
-    public PointList findOptimalRoute(Point2D.Double startPoint, Point2D.Double finishPoint, String chosenWeighting) {
-
-        MyGraphHopper hopper = new MyGraphHopper();
-        hopper.setOSMFile(OSM_FILE_PATH);
-
-        hopper.setGraphHopperLocation(GRAPH_FOLDER);
-        hopper.setEncodingManager(new EncodingManager("car"));
-        hopper.setCHEnable(false);
-        hopper.importOrLoad();
+    public PointList findOptimalRoute(Point2D.Double startPoint, Point2D.Double finishPoint, String chosenWeighting,
+                                      MyGraphHopper hopper) {
 
         //System.out.println("StartPoint - Latitude: " + startPoint.getX() + ", Long: " + startPoint.getY());
         //System.out.println("EndPoint - Latitude: " + finishPoint.getX() + ", Long: " + finishPoint.getY());

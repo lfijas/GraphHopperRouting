@@ -18,7 +18,7 @@ public class Gui {
     private JRadioButton mShortestRadioBtn;
     private JRadioButton mCustomTrafficRadioBtn;
 
-    public Gui() {
+    public Gui(final MyGraphHopper hopper) {
 
         final JFrame frame = new JFrame("OptimalRouteFinder");
 
@@ -95,7 +95,7 @@ public class Gui {
                         Point2D.Double finishPoint = route.get(route.size() - 1);
 
                         PointList optimalRoute = optimalRouteCoverageCalc
-                                .findOptimalRoute(startPoint, finishPoint, Consts.FASTEST);
+                                .findOptimalRoute(startPoint, finishPoint, Consts.FASTEST, hopper);
                         if (optimalRoute != null) {
                             reader.saveOptimalRouteIntoDb(id, optimalRoute);
                             double pointsCoverage = optimalRouteCoverageCalc.calculateOptimalRouteCoverage(route, optimalRoute);
@@ -131,7 +131,7 @@ public class Gui {
                             Point2D.Double startPoint = route.get(0);
                             Point2D.Double finishPoint = route.get(route.size() - 1);
                             PointList optimalRoute = optimalRouteCoverageCalc
-                                    .findOptimalRoute(startPoint, finishPoint, chosenWeighting);
+                                    .findOptimalRoute(startPoint, finishPoint, chosenWeighting, hopper);
                             if (optimalRoute != null) {
                                 reader.saveOptimalRouteIntoDb(id, optimalRoute);
                                 System.out.println("Route #" + id);
