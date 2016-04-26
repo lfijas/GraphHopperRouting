@@ -7,9 +7,7 @@ import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.EdgeIteratorState;
 
-import java.awt.geom.Point2D;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by lukasz on 22.03.16.
@@ -29,29 +27,31 @@ public class MyGraphHopper extends GraphHopper {
     public void loadTrafficData() {
         LocationIndex locationIndex = getLocationIndex();
         FlagEncoder carEncoder = getEncodingManager().getEncoder("car");
+        Map<Integer, Integer> modifiedEdges = new HashMap();
 
         DataReader reader = new DataReader();
         for (int id = 1; id < 100; id++) {
-            Set modifiedEdges = new HashSet();
-            java.util.List<Point2D.Double> route = reader.readDb(id, Consts.TRAFFIC_TABLE);
-            for (Point2D.Double point : route) {
-                double latitude = point.getX();
-                double longitude = point.getY();
+            List<FullTrafficData> fullTrafficDataList = reader.readFullTrafficData(id, Consts.TRAFFIC_WITH_SPEED_TABLE);
+            for (FullTrafficData point : fullTrafficDataList) {
+                double latitude = point.getLatitude();
+                double longitude = point.getLongitude();
+                int speed = point.getSpeed();
                 QueryResult qr = locationIndex.findClosest(latitude, longitude, EdgeFilter.ALL_EDGES);
                 EdgeIteratorState edge = qr.getClosestEdge();
                 int edgeId = edge.getEdge();
-                if (!modifiedEdges.contains(edgeId)) {
-                    modifiedEdges.add(edgeId);
-                    long existingFlags = edge.getFlags();
-                    double oldSpeed = carEncoder.getSpeed(existingFlags);
-                    if (oldSpeed > 5) {
-                        double newSpeed = oldSpeed - 5;
-                        edge.setFlags(carEncoder.setSpeed(existingFlags, newSpeed));
-                        System.out.println("Edge " + edgeId + " speed changed from " + oldSpeed + " to " + newSpeed);
-                    }
+                long existingFlags = edge.getFlags();
+                double oldSpeed = carEncoder.getSpeed(existingFlags);
+                double newSpeed;
+                Integer numberOfSamples = modifiedEdges.get(edgeId);
+                if (numberOfSamples == null) {
+                    newSpeed = (2 * oldSpeed + speed) / 3;
+                    modifiedEdges.put(edgeId, 3);
+                } else {
+                    newSpeed = oldSpeed + speed / ++numberOfSamples;
+                    modifiedEdges.put(edgeId, numberOfSamples);
                 }
-
-
+                edge.setFlags(carEncoder.setSpeed(existingFlags, newSpeed));
+                System.out.println("Edge " + edgeId + " speed changed from " + oldSpeed + " to " + newSpeed);
             }
         }
     }

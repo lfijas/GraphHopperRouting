@@ -52,6 +52,37 @@ public class DataReader {
 
     }
 
+    public List<FullTrafficData> readFullTrafficData(int id, String tableName) {
+        List<FullTrafficData> resultList = new ArrayList<FullTrafficData>();
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+
+            conn = DriverManager.getConnection(connAddr);
+
+            preparedStatement = conn.prepareStatement("select * from yanosik." + tableName
+                    + " where id = ? order by Date");
+            preparedStatement.setInt(1, id);
+            resultSet = preparedStatement.executeQuery();
+
+            while ((resultSet.next())) {
+                FullTrafficData fullTrafficData = new FullTrafficData();
+                fullTrafficData.setLatitude(resultSet.getDouble("Latitude"));
+                fullTrafficData.setLongitude(resultSet.getDouble("Longitude"));
+                fullTrafficData.setSpeed(resultSet.getInt("Speed"));
+                fullTrafficData.setAzimuth(resultSet.getInt("Azimuth"));
+                resultList.add(fullTrafficData);
+            }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return resultList;
+    }
+
     public void saveOptimalRouteIntoDb(int routeId, PointList optimalRoute) {
 
         deleteOptimalRouteFromDb(routeId);
