@@ -123,7 +123,10 @@ public class Gui {
                     DataReader reader = new DataReader();
                     OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
 
-                    for (int id = 1; id < 100; id++) {
+                    java.util.List<Integer> selectedRoutes = reader.readSelectedTrafficId(Consts.MORNING_TRAFFIC_QUERY);
+
+                    //for (int id = 1; id < 1000; id++) {
+                    for (int id : selectedRoutes) {
 
                         java.util.List<Point2D.Double> route = reader.readDb(id, Consts.TRAFFIC_WITHOUT_PARKING_TABLE);
 

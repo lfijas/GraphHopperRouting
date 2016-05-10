@@ -83,6 +83,30 @@ public class DataReader {
         return resultList;
     }
 
+    public List<Integer> readSelectedTrafficId(String query) {
+        List<Integer> resultList = new ArrayList<>();
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+
+            conn = DriverManager.getConnection(connAddr);
+
+            preparedStatement = conn.prepareStatement(query);
+            resultSet = preparedStatement.executeQuery();
+
+            while ((resultSet.next())) {
+                resultList.add(resultSet.getInt("Id"));
+            }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+        return resultList;
+    }
+
     public void saveOptimalRouteIntoDb(int routeId, PointList optimalRoute) {
 
         deleteOptimalRouteFromDb(routeId);

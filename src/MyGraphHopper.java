@@ -30,7 +30,10 @@ public class MyGraphHopper extends GraphHopper {
         Map<Integer, Integer> modifiedEdges = new HashMap();
 
         DataReader reader = new DataReader();
-        for (int id = 1; id < 100; id++) {
+        java.util.List<Integer> selectedRoutes = reader.readSelectedTrafficId(Consts.MORNING_TRAFFIC_QUERY);
+
+        //for (int id = 1; id < 1000; id++) {
+        for (int id : selectedRoutes) {
             List<FullTrafficData> fullTrafficDataList = reader.readFullTrafficData(id, Consts.TRAFFIC_WITH_SPEED_TABLE);
             for (FullTrafficData point : fullTrafficDataList) {
                 double latitude = point.getLatitude();
@@ -51,7 +54,8 @@ public class MyGraphHopper extends GraphHopper {
                     modifiedEdges.put(edgeId, numberOfSamples);
                 }
                 edge.setFlags(carEncoder.setSpeed(existingFlags, newSpeed));
-                System.out.println("Edge " + edgeId + " speed changed from " + oldSpeed + " to " + newSpeed);
+                System.out.println("Edge " + edgeId + " speed changed from " + oldSpeed + " to " + newSpeed +
+                        ", number of samples: " + numberOfSamples);
             }
         }
     }
