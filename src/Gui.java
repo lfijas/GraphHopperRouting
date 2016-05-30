@@ -98,7 +98,7 @@ public class Gui {
                                 .findOptimalRoute(startPoint, finishPoint, Consts.FASTEST, hopper);
                         if (optimalRoute != null) {
                             reader.saveOptimalRouteIntoDb(id, optimalRoute);
-                            double pointsCoverage = optimalRouteCoverageCalc.calculateOptimalRouteCoverage(route, optimalRoute);
+                            double pointsCoverage = optimalRouteCoverageCalc.calculateOptimalRouteCoverage(id, route, optimalRoute);
                             System.out.println("Route #" + id + " - pointsCoverage: " + pointsCoverage);
                             try {
                                 Desktop.getDesktop().browse(new URI("http://localhost/map.html?id=" + id));
@@ -139,7 +139,7 @@ public class Gui {
                                 reader.saveOptimalRouteIntoDb(id, optimalRoute);
                                 System.out.println("Route #" + id);
                                 double pointsCoverage = optimalRouteCoverageCalc
-                                        .calculateOptimalRouteCoverage(route, optimalRoute);
+                                        .calculateOptimalRouteCoverage(id, route, optimalRoute);
                                 System.out.println("PointsCoverage: " + pointsCoverage);
                             }
                         }

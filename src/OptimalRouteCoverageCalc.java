@@ -59,7 +59,7 @@ public class OptimalRouteCoverageCalc {
         return pointList;
     }
 
-    public double calculateOptimalRouteCoverage(List<Point2D.Double> realRoute, PointList optimalRoute) {
+    public double calculateOptimalRouteCoverage(int id, List<Point2D.Double> realRoute, PointList optimalRoute) {
         int counter = 1;
         double weightedCounter = 0;
         double routeLength = 0;
@@ -129,7 +129,7 @@ public class OptimalRouteCoverageCalc {
         }
         try {
             PrintWriter printWriter = new PrintWriter(new FileWriter(Consts.OPTIMAL_COVERAGE_RESULTS_FILE, true));
-            printWriter.println(weightedCounter / routeLength + " " + routeLength);
+            printWriter.println(id + " " + weightedCounter / routeLength + " " + routeLength);
             printWriter.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
