@@ -1,5 +1,3 @@
-import com.graphhopper.util.PointList;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -94,11 +92,12 @@ public class Gui {
                         Point2D.Double startPoint = route.get(0);
                         Point2D.Double finishPoint = route.get(route.size() - 1);
 
-                        PointList optimalRoute = optimalRouteCoverageCalc
+                        OptimalRoute optimalRoute = optimalRouteCoverageCalc
                                 .findOptimalRoute(startPoint, finishPoint, Consts.FASTEST, hopper);
-                        if (optimalRoute != null) {
-                            reader.saveOptimalRouteIntoDb(id, optimalRoute);
-                            double pointsCoverage = optimalRouteCoverageCalc.calculateOptimalRouteCoverage(id, route, optimalRoute);
+                        if (optimalRoute.getRoute() != null) {
+                            reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute());
+                            double pointsCoverage = optimalRouteCoverageCalc.calculateOptimalRouteCoverage(id, route,
+                                    optimalRoute.getRoute(), optimalRoute.getTime());
                             System.out.println("Route #" + id + " - pointsCoverage: " + pointsCoverage);
                             try {
                                 Desktop.getDesktop().browse(new URI("http://localhost/map.html?id=" + id));
@@ -133,13 +132,14 @@ public class Gui {
                         if (route.size() > 10) {
                             Point2D.Double startPoint = route.get(0);
                             Point2D.Double finishPoint = route.get(route.size() - 1);
-                            PointList optimalRoute = optimalRouteCoverageCalc
+                            OptimalRoute optimalRoute = optimalRouteCoverageCalc
                                     .findOptimalRoute(startPoint, finishPoint, chosenWeighting, hopper);
-                            if (optimalRoute != null) {
-                                reader.saveOptimalRouteIntoDb(id, optimalRoute);
+                            if (optimalRoute.getRoute() != null) {
+                                reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute());
                                 System.out.println("Route #" + id);
                                 double pointsCoverage = optimalRouteCoverageCalc
-                                        .calculateOptimalRouteCoverage(id, route, optimalRoute);
+                                        .calculateOptimalRouteCoverage(id, route, optimalRoute.getRoute(),
+                                                optimalRoute.getTime());
                                 System.out.println("PointsCoverage: " + pointsCoverage);
                             }
                         }

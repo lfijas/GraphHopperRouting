@@ -25,7 +25,7 @@ public class OptimalRouteCoverageCalc {
     private static final double LONG_MARGIN = 0.0007; // ~ 100m
 
 
-    public PointList findOptimalRoute(Point2D.Double startPoint, Point2D.Double finishPoint, String chosenWeighting,
+    public OptimalRoute findOptimalRoute(Point2D.Double startPoint, Point2D.Double finishPoint, String chosenWeighting,
                                       MyGraphHopper hopper) {
 
         //System.out.println("StartPoint - Latitude: " + startPoint.getX() + ", Long: " + startPoint.getY());
@@ -47,6 +47,7 @@ public class OptimalRouteCoverageCalc {
         PointList pointList = rsp.getPoints();
         double distance = rsp.getDistance();
         long timeInMs = rsp.getTime();
+        OptimalRoute optimalRoute = new OptimalRoute(pointList, timeInMs);
 
         //System.out.println("AStar bi - Distance: " + distance + ", time in millis: " + timeInMs);
         //System.out.println("Points:");
@@ -56,10 +57,11 @@ public class OptimalRouteCoverageCalc {
             //System.out.println("Lat: " + latitude + ", Long: " + longitude);
 
         }
-        return pointList;
+        return optimalRoute;
     }
 
-    public double calculateOptimalRouteCoverage(int id, List<Point2D.Double> realRoute, PointList optimalRoute) {
+    public double calculateOptimalRouteCoverage(int id, List<Point2D.Double> realRoute, PointList optimalRoute,
+                                                long optimalRouteTime) {
         int counter = 1;
         double weightedCounter = 0;
         double routeLength = 0;
@@ -129,7 +131,7 @@ public class OptimalRouteCoverageCalc {
         }
         try {
             PrintWriter printWriter = new PrintWriter(new FileWriter(Consts.OPTIMAL_COVERAGE_RESULTS_FILE, true));
-            printWriter.println(id + " " + weightedCounter / routeLength + " " + routeLength);
+            printWriter.println(id + " " + weightedCounter / routeLength + " " + routeLength + " " + optimalRouteTime);
             printWriter.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
