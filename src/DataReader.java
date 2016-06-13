@@ -114,7 +114,12 @@ public class DataReader {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(connAddr);
-            String sql = "insert into yanosik.Optimal_routes (id, latitude, longitude) values (?, ?, ?)";
+            String tableName = Consts.OPTIMAL_ROUTES_TABLE;
+            if (Consts.CONSIDER_TRAFFIC_FLAG) {
+                tableName = Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE;
+            }
+            String sql = "insert into yanosik." + tableName +
+                " (id, latitude, longitude) values (?, ?, ?)";
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setInt(1, routeId);
             for (GHPoint3D point : optimalRoute) {
@@ -135,7 +140,11 @@ public class DataReader {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(connAddr);
-            String sql = "delete from Optimal_routes where id = ?";
+            String tableName = Consts.OPTIMAL_ROUTES_TABLE;
+            if (Consts.CONSIDER_TRAFFIC_FLAG) {
+                tableName = Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE;
+            }
+            String sql = "delete from yanosik." + tableName + " where id = ?";
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setInt(1, routeId);
             preparedStatement.executeUpdate();

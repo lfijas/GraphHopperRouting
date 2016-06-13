@@ -24,7 +24,9 @@ public class GraphHopperRoutingMain {
         hopper.setEncodingManager(new EncodingManager("car"));
         hopper.setCHEnable(false);
         hopper.importOrLoad();
-        //hopper.loadTrafficData();
+        if (Consts.CONSIDER_TRAFFIC_FLAG) {
+            hopper.loadTrafficData();
+        }
 
         new Gui(hopper);
 
