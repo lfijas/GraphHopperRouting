@@ -143,4 +143,24 @@ public class OptimalRouteCoverageCalc {
         return (double) counter/realRoute.size();
     }
 
+    public void compareOptimalRoutesTime(List<Point2D.Double> route, String chosenWeighting,
+                                         MyGraphHopper hopper) {
+
+        Point2D.Double startPoint = route.get(0);
+        Point2D.Double finishPoint = route.get(route.size() - 1);
+        OptimalRoute optimalRoute = findOptimalRoute(startPoint, finishPoint, chosenWeighting, hopper);
+        System.out.println("Optimal route time: " + optimalRoute.getTime());
+        long calculatedOptimalRouteTime = 0;
+        for (int i = 1; i < route.size(); i++) {
+            System.out.println("Optimal route part: " + i);
+            OptimalRoute partOfOptimalRoute = findOptimalRoute(route.get(i - 1), route.get(i), chosenWeighting, hopper);
+            calculatedOptimalRouteTime += partOfOptimalRoute.getTime();
+            for (GHPoint3D point: partOfOptimalRoute.getRoute()) {
+                System.out.println("Lat: " + point.getLat() + ", lon: " + point.getLon());
+            }
+        }
+        System.out.println("Calculated optimal route time: " + calculatedOptimalRouteTime);
+
+    }
+
 }

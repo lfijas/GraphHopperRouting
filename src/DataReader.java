@@ -18,7 +18,7 @@ public class DataReader {
     private ResultSet resultSet;
     private List<Point2D.Double> resultPointsList;
 
-    public List<Point2D.Double> readDb(int id, String tableName) {
+    public List<Point2D.Double> readDb(int id, String tableName, String orderByColumn) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
@@ -27,8 +27,12 @@ public class DataReader {
             //statement = conn.createStatement();
             //resultSet = statement.executeQuery("select * from yanosik.Traffic where id = 2 order by Date");
 
-            preparedStatement = conn.prepareStatement("select * from yanosik." + tableName
-                    + " where id = ? order by Date");
+            String sqlQuery = "select * from yanosik.%s"
+                                        + " where id = ? order by %s";
+
+            preparedStatement = conn.prepareStatement(String.format(sqlQuery, tableName, orderByColumn));
+//            preparedStatement = conn.prepareStatement("select * from yanosik." + tableName
+//                    + " where id = ?");
             preparedStatement.setInt(1, id);
             resultSet = preparedStatement.executeQuery();
 
@@ -119,13 +123,16 @@ public class DataReader {
                 tableName = Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE;
             }
             String sql = "insert into yanosik." + tableName +
-                " (id, latitude, longitude) values (?, ?, ?)";
+                " (id, latitude, longitude, point_order) values (?, ?, ?, ?)";
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setInt(1, routeId);
+            int order = 1;
             for (GHPoint3D point : optimalRoute) {
                 preparedStatement.setDouble(2, point.getLat());
                 preparedStatement.setDouble(3, point.getLon());
+                preparedStatement.setInt(4, order);
                 preparedStatement.executeUpdate();
+                order++;
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

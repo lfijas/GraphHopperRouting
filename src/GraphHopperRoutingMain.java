@@ -1,5 +1,3 @@
-import com.graphhopper.routing.util.EncodingManager;
-
 /**
  * Created by lukasz on 13.10.15.
  */
@@ -12,23 +10,31 @@ public class GraphHopperRoutingMain {
     private static final String GRAPH_FOLDER
             = "/home/lukasz/Pulpit/Magisterskie/Praca_magisterska/GraphHopper/Dev/GraphHopper_routing/generated_graph";
 
+    private static MyGraphHopper mHopperInstance;
+
+    public static MyGraphHopper getHopperInstance() {
+        return mHopperInstance;
+    }
 
     public static void main(String[] args) {
 
         System.out.println("Program started");
 
-        MyGraphHopper hopper = new MyGraphHopper();
-        hopper.setOSMFile(OSM_FILE_PATH);
+        mHopperInstance = new MyGraphHopper();
+        mHopperInstance.setOSMFile(OSM_FILE_PATH);
 
-        hopper.setGraphHopperLocation(GRAPH_FOLDER);
-        hopper.setEncodingManager(new EncodingManager("car"));
-        hopper.setCHEnable(false);
-        hopper.importOrLoad();
+        mHopperInstance.setGraphHopperLocation(GRAPH_FOLDER);
+        mHopperInstance.clean();
+        //hopper.setEncodingManager(new EncodingManager("car"));
+        mHopperInstance.setEncodingManager(new CustomEncodingManager(CustomEncodingManager.CUSTOM_CAR));
+        //mHopperInstance.setEncodingManager(new EncodingManager("car"));
+        mHopperInstance.setCHEnable(false);
+        mHopperInstance.importOrLoad();
         if (Consts.CONSIDER_TRAFFIC_FLAG) {
-            hopper.loadTrafficData();
+            mHopperInstance.loadTrafficData();
         }
 
-        new Gui(hopper);
+        new Gui(mHopperInstance);
 
     }
 

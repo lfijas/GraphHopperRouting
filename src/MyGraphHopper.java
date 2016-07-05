@@ -26,7 +26,8 @@ public class MyGraphHopper extends GraphHopper {
 
     public void loadTrafficData() {
         LocationIndex locationIndex = getLocationIndex();
-        FlagEncoder carEncoder = getEncodingManager().getEncoder("car");
+        FlagEncoder customCarEncoder = getEncodingManager().getEncoder(CustomEncodingManager.CUSTOM_CAR);
+        //FlagEncoder customCarEncoder = getEncodingManager().getEncoder("car");
         Map<Integer, Integer> modifiedEdges = new HashMap();
 
         DataReader reader = new DataReader();
@@ -43,7 +44,9 @@ public class MyGraphHopper extends GraphHopper {
                 EdgeIteratorState edge = qr.getClosestEdge();
                 int edgeId = edge.getEdge();
                 long existingFlags = edge.getFlags();
-                double oldSpeed = carEncoder.getSpeed(existingFlags);
+                double oldSpeed = customCarEncoder.getSpeed(existingFlags);
+                double customSpeed = customCarEncoder.getDouble(existingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY);
+                System.out.println("Speed: " + oldSpeed + ", custom speed: " + customSpeed);
                 double newSpeed;
                 Integer numberOfSamples = modifiedEdges.get(edgeId);
                 if (numberOfSamples == null) {
@@ -53,7 +56,8 @@ public class MyGraphHopper extends GraphHopper {
                     newSpeed = oldSpeed + speed / ++numberOfSamples;
                     modifiedEdges.put(edgeId, numberOfSamples);
                 }
-                edge.setFlags(carEncoder.setSpeed(existingFlags, newSpeed));
+                edge.setFlags(customCarEncoder.setSpeed(existingFlags, newSpeed));
+                edge.setFlags(customCarEncoder.setDouble(existingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY, newSpeed));
                 System.out.println("Edge " + edgeId + " speed changed from " + oldSpeed + " to " + newSpeed +
                         ", number of samples: " + numberOfSamples);
             }

@@ -86,7 +86,7 @@ public class Gui {
                     DataReader reader = new DataReader();
                     OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
 
-                    java.util.List<Point2D.Double> route = reader.readDb(id, Consts.TRAFFIC_TABLE);
+                    java.util.List<Point2D.Double> route = reader.readDb(id, Consts.TRAFFIC_TABLE, "date");
 
                     if (route.size() > 0) {
                         Point2D.Double startPoint = route.get(0);
@@ -127,7 +127,7 @@ public class Gui {
                     //for (int id = 1; id < 1000; id++) {
                     for (int id : selectedRoutes) {
 
-                        java.util.List<Point2D.Double> route = reader.readDb(id, Consts.TRAFFIC_WITHOUT_PARKING_TABLE);
+                        java.util.List<Point2D.Double> route = reader.readDb(id, Consts.TRAFFIC_WITHOUT_PARKING_TABLE, "date");
 
                         if (route.size() > 10) {
                             Point2D.Double startPoint = route.get(0);
@@ -149,6 +149,17 @@ public class Gui {
                 }
             }
         });
+
+        //comparing optimal routes time
+        DataReader reader = new DataReader();
+        OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
+        int[] testRoutes = {/*14, 1747, 2159, 14815, 14816, */16998};
+        for (int testRoute : testRoutes) {
+            System.out.println("Route id: " + testRoute);
+            java.util.List<Point2D.Double> route = reader.readDb(testRoute, Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE,
+                    "point_order");
+            optimalRouteCoverageCalc.compareOptimalRoutesTime(route, Consts.FASTEST, hopper);
+        }
     }
 
     private String getChosenWeighting() {
