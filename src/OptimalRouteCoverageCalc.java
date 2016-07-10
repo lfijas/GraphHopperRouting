@@ -33,7 +33,7 @@ public class OptimalRouteCoverageCalc {
 
         GHRequest req = new GHRequest(startPoint.getX(), startPoint.getY(), finishPoint.getX(), finishPoint.getY())
                 .setWeighting(chosenWeighting)
-                .setVehicle("car")
+                .setVehicle(CustomEncodingManager.CUSTOM_CAR)
                 .setLocale(Locale.US)
                 .setAlgorithm(AlgorithmOptions.DIJKSTRA_BI);
 
@@ -41,6 +41,11 @@ public class OptimalRouteCoverageCalc {
 
         if(rsp.hasErrors()) {
             System.out.println("Errors!!!");
+            List<Throwable> errorList = rsp.getErrors();
+            System.out.println("errorList size: " + errorList.size());
+            for(Throwable e : errorList) {
+                e.printStackTrace();
+            }
             return null;
         }
 
@@ -150,7 +155,7 @@ public class OptimalRouteCoverageCalc {
         Point2D.Double finishPoint = route.get(route.size() - 1);
         OptimalRoute optimalRoute = findOptimalRoute(startPoint, finishPoint, chosenWeighting, hopper);
         System.out.println("Optimal route time: " + optimalRoute.getTime());
-        long calculatedOptimalRouteTime = 0;
+/*        long calculatedOptimalRouteTime = 0;
         for (int i = 1; i < route.size(); i++) {
             System.out.println("Optimal route part: " + i);
             OptimalRoute partOfOptimalRoute = findOptimalRoute(route.get(i - 1), route.get(i), chosenWeighting, hopper);
@@ -159,7 +164,7 @@ public class OptimalRouteCoverageCalc {
                 System.out.println("Lat: " + point.getLat() + ", lon: " + point.getLon());
             }
         }
-        System.out.println("Calculated optimal route time: " + calculatedOptimalRouteTime);
+        System.out.println("Calculated optimal route time: " + calculatedOptimalRouteTime);*/
 
     }
 

@@ -45,8 +45,6 @@ public class MyGraphHopper extends GraphHopper {
                 int edgeId = edge.getEdge();
                 long existingFlags = edge.getFlags();
                 double oldSpeed = customCarEncoder.getSpeed(existingFlags);
-                double customSpeed = customCarEncoder.getDouble(existingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY);
-                System.out.println("Speed: " + oldSpeed + ", custom speed: " + customSpeed);
                 double newSpeed;
                 Integer numberOfSamples = modifiedEdges.get(edgeId);
                 if (numberOfSamples == null) {
@@ -57,9 +55,16 @@ public class MyGraphHopper extends GraphHopper {
                     modifiedEdges.put(edgeId, numberOfSamples);
                 }
                 edge.setFlags(customCarEncoder.setSpeed(existingFlags, newSpeed));
+                existingFlags = edge.getFlags();
                 edge.setFlags(customCarEncoder.setDouble(existingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY, newSpeed));
                 System.out.println("Edge " + edgeId + " speed changed from " + oldSpeed + " to " + newSpeed +
-                        ", number of samples: " + numberOfSamples);
+                       ", number of samples: " + numberOfSamples);
+
+                //TEST
+                long testExistingFlags = edge.getFlags();
+                double testSpeed = customCarEncoder.getSpeed(testExistingFlags);
+                double testCustomSpeed = customCarEncoder.getDouble(testExistingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY);
+                assert testSpeed == testCustomSpeed;
             }
         }
     }

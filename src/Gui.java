@@ -151,15 +151,15 @@ public class Gui {
         });
 
         //comparing optimal routes time
-        DataReader reader = new DataReader();
-        OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
-        int[] testRoutes = {/*14, 1747, 2159, 14815, 14816, */16998};
-        for (int testRoute : testRoutes) {
-            System.out.println("Route id: " + testRoute);
-            java.util.List<Point2D.Double> route = reader.readDb(testRoute, Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE,
-                    "point_order");
-            optimalRouteCoverageCalc.compareOptimalRoutesTime(route, Consts.FASTEST, hopper);
-        }
+//        DataReader reader = new DataReader();
+//        OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
+//        int[] testRoutes = {14, 1747, 2159, 14815, 14816, 16998};
+//        for (int testRoute : testRoutes) {
+//            System.out.println("Route id: " + testRoute);
+//            java.util.List<Point2D.Double> route = reader.readDb(testRoute, Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE,
+//                    "point_order");
+//            optimalRouteCoverageCalc.compareOptimalRoutesTime(route, Consts.FASTEST, hopper);
+//        }
     }
 
     private String getChosenWeighting() {

@@ -20,21 +20,20 @@ public class GraphHopperRoutingMain {
 
         System.out.println("Program started");
 
-        mHopperInstance = new MyGraphHopper();
-        mHopperInstance.setOSMFile(OSM_FILE_PATH);
+        MyGraphHopper hopper = new MyGraphHopper();
+        hopper.setOSMFile(OSM_FILE_PATH);
 
-        mHopperInstance.setGraphHopperLocation(GRAPH_FOLDER);
-        mHopperInstance.clean();
+        hopper.setGraphHopperLocation(GRAPH_FOLDER);
+        //hopper.clean();
         //hopper.setEncodingManager(new EncodingManager("car"));
-        mHopperInstance.setEncodingManager(new CustomEncodingManager(CustomEncodingManager.CUSTOM_CAR));
-        //mHopperInstance.setEncodingManager(new EncodingManager("car"));
-        mHopperInstance.setCHEnable(false);
-        mHopperInstance.importOrLoad();
+        hopper.setEncodingManager(new CustomEncodingManager(CustomEncodingManager.CUSTOM_CAR));
+        hopper.setCHEnable(false);
+        hopper.importOrLoad();
         if (Consts.CONSIDER_TRAFFIC_FLAG) {
-            mHopperInstance.loadTrafficData();
+            hopper.loadTrafficData();
         }
 
-        new Gui(mHopperInstance);
+        new Gui(hopper);
 
     }
 

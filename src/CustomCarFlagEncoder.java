@@ -1,5 +1,6 @@
 import com.graphhopper.routing.util.CarFlagEncoder;
 import com.graphhopper.routing.util.EncodedDoubleValue;
+import com.graphhopper.util.BitUtil;
 import com.graphhopper.util.PMap;
 
 /**
@@ -17,6 +18,7 @@ public class CustomCarFlagEncoder extends CarFlagEncoder {
 
     public CustomCarFlagEncoder(PMap properties) {
         super(properties);
+        //maxPossibleSpeed = 170;
     }
 
     public CustomCarFlagEncoder(String propertiesStr) {
@@ -58,6 +60,12 @@ public class CustomCarFlagEncoder extends CarFlagEncoder {
     public long setDouble(long flags, int key, double value) {
         switch (key) {
             case CUSTOM_SPEED_KEY:
+                if (value < 0 || Double.isNaN(value))
+                    throw new IllegalArgumentException("Speed cannot be negative or NaN: " + value
+                            + ", flags:" + BitUtil.LITTLE.toBitString(flags));
+
+                if (value > getMaxSpeed())
+                    value = getMaxSpeed();
                 return customSpeedEncoder.setDoubleValue(flags, value);
             default:
                 return super.setDouble(flags, key, value);
