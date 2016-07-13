@@ -51,20 +51,36 @@ public class MyGraphHopper extends GraphHopper {
                     newSpeed = (2 * oldSpeed + speed) / 3;
                     modifiedEdges.put(edgeId, 3);
                 } else {
+                    if (!Consts.CONSIDER_TRAFFIC_FLAG) {
+                        System.out.println("Old speed: " + oldSpeed);
+                        oldSpeed = customCarEncoder.getDouble(existingFlags,
+                                CustomCarFlagEncoder.CUSTOM_SPEED_KEY);
+                        System.out.println("Old custom speed: " + oldSpeed);
+                    }
                     newSpeed = oldSpeed + speed / ++numberOfSamples;
                     modifiedEdges.put(edgeId, numberOfSamples);
                 }
-                edge.setFlags(customCarEncoder.setSpeed(existingFlags, newSpeed));
-                existingFlags = edge.getFlags();
-                edge.setFlags(customCarEncoder.setDouble(existingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY, newSpeed));
-                System.out.println("Edge " + edgeId + " speed changed from " + oldSpeed + " to " + newSpeed +
-                       ", number of samples: " + numberOfSamples);
+                if (Consts.CONSIDER_TRAFFIC_FLAG) {
+                    edge.setFlags(customCarEncoder.setSpeed(existingFlags, newSpeed));
+                    System.out.println("Edge " + edgeId + " speed changed from " + oldSpeed + " to " + newSpeed +
+                            ", number of samples: " + numberOfSamples);
+                }
+                if (Consts.STORE_EXTRA_CUSTOM_SPEED) {
+                    if (Consts.CONSIDER_TRAFFIC_FLAG) {
+                        existingFlags = edge.getFlags();
+                    }
+                    edge.setFlags(customCarEncoder.setDouble(existingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY,
+                            newSpeed));
+                    System.out.println("Edge " + edgeId + " - custom speed changed from "
+                            + oldSpeed + " to " + newSpeed +
+                            ", number of samples: " + numberOfSamples);
+                }
 
                 //TEST
-                long testExistingFlags = edge.getFlags();
-                double testSpeed = customCarEncoder.getSpeed(testExistingFlags);
-                double testCustomSpeed = customCarEncoder.getDouble(testExistingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY);
-                assert testSpeed == testCustomSpeed;
+//                long testExistingFlags = edge.getFlags();
+//                double testSpeed = customCarEncoder.getSpeed(testExistingFlags);
+//                double testCustomSpeed = customCarEncoder.getDouble(testExistingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY);
+//                assert testSpeed == testCustomSpeed;
             }
         }
     }

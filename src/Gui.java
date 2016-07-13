@@ -135,7 +135,9 @@ public class Gui {
                             OptimalRoute optimalRoute = optimalRouteCoverageCalc
                                     .findOptimalRoute(startPoint, finishPoint, chosenWeighting, hopper);
                             if (optimalRoute.getRoute() != null) {
-                                reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute());
+                                if (Consts.SAVE_OPTIMAL_ROUTE_INTO_DB) {
+                                    reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute());
+                                }
                                 System.out.println("Route #" + id);
                                 double pointsCoverage = optimalRouteCoverageCalc
                                         .calculateOptimalRouteCoverage(id, route, optimalRoute.getRoute(),
@@ -153,7 +155,8 @@ public class Gui {
         //comparing optimal routes time
 //        DataReader reader = new DataReader();
 //        OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
-//        int[] testRoutes = {14, 1747, 2159, 14815, 14816, 16998};
+////        int[] testRoutes = {14, 1747, 2159, 14815, 14816, 16998};
+//        int[] testRoutes = {4027, 5454, 6379, 8343, 8782, 16521};
 //        for (int testRoute : testRoutes) {
 //            System.out.println("Route id: " + testRoute);
 //            java.util.List<Point2D.Double> route = reader.readDb(testRoute, Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE,

@@ -29,7 +29,7 @@ public class GraphHopperRoutingMain {
         hopper.setEncodingManager(new CustomEncodingManager(CustomEncodingManager.CUSTOM_CAR));
         hopper.setCHEnable(false);
         hopper.importOrLoad();
-        if (Consts.CONSIDER_TRAFFIC_FLAG) {
+        if (Consts.CONSIDER_TRAFFIC_FLAG || Consts.STORE_EXTRA_CUSTOM_SPEED) {
             hopper.loadTrafficData();
         }
 

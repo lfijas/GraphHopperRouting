@@ -154,7 +154,8 @@ public class OptimalRouteCoverageCalc {
         Point2D.Double startPoint = route.get(0);
         Point2D.Double finishPoint = route.get(route.size() - 1);
         OptimalRoute optimalRoute = findOptimalRoute(startPoint, finishPoint, chosenWeighting, hopper);
-        System.out.println("Optimal route time: " + optimalRoute.getTime());
+        System.out.println("Optimal route time: " + optimalRoute.getTime()
+                + " number of points: " + optimalRoute.getRoute().size());
 /*        long calculatedOptimalRouteTime = 0;
         for (int i = 1; i < route.size(); i++) {
             System.out.println("Optimal route part: " + i);
