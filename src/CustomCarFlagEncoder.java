@@ -41,12 +41,6 @@ public class CustomCarFlagEncoder extends CarFlagEncoder {
     }
 
     @Override
-    public long setSpeed(long flags, double speed) {
-        customSpeedEncoder.setDoubleValue(flags, speed);
-        return super.setSpeed(flags, speed);
-    }
-
-    @Override
     public double getDouble(long flags, int key) {
         switch (key) {
             case CUSTOM_SPEED_KEY:
