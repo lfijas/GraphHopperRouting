@@ -134,7 +134,7 @@ public class Gui {
                             Point2D.Double finishPoint = route.get(route.size() - 1);
                             OptimalRoute optimalRoute = optimalRouteCoverageCalc
                                     .findOptimalRoute(startPoint, finishPoint, chosenWeighting, hopper);
-                            if (optimalRoute.getRoute() != null) {
+                            if (optimalRoute != null && optimalRoute.getRoute() != null) {
                                 if (Consts.SAVE_OPTIMAL_ROUTE_INTO_DB) {
                                     reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute());
                                 }
