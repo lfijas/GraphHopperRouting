@@ -52,10 +52,10 @@ public class MyGraphHopper extends GraphHopper {
                     modifiedEdges.put(edgeId, 3);
                 } else {
                     if (!Consts.CONSIDER_TRAFFIC_FLAG) {
-                        System.out.println("Old speed: " + oldSpeed);
+                        //System.out.println("Old speed: " + oldSpeed);
                         oldSpeed = customCarEncoder.getDouble(existingFlags,
                                 CustomCarFlagEncoder.CUSTOM_SPEED_KEY);
-                        System.out.println("Old custom speed: " + oldSpeed);
+                        //System.out.println("Old custom speed: " + oldSpeed);
                     }
                     newSpeed = oldSpeed + speed / ++numberOfSamples;
                     modifiedEdges.put(edgeId, numberOfSamples);

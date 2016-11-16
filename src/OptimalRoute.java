@@ -7,10 +7,12 @@ public class OptimalRoute {
 
     private PointList route;
     private long time;
+    private double routeLength;
 
-    public OptimalRoute(PointList route, long time) {
+    public OptimalRoute(PointList route, long time, double routeLength) {
         this.route = route;
         this.time = time;
+        this.routeLength = routeLength;
     }
 
     public PointList getRoute() {
@@ -27,5 +29,13 @@ public class OptimalRoute {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public double getRouteLength() {
+        return routeLength;
+    }
+
+    public void setRouteLength(double routeLength) {
+        this.routeLength = routeLength;
     }
 }

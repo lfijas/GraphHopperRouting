@@ -23,6 +23,7 @@ public class OptimalRouteCoverageCalc {
      */
     private static final double LAT_MARGIN = 0.0005; // ~ 100m
     private static final double LONG_MARGIN = 0.0007; // ~ 100m
+    private static final double DEGREE_TO_KILOMETERS_FACTOR = 111.196672;
 
 
     public OptimalRoute findOptimalRoute(Point2D.Double startPoint, Point2D.Double finishPoint, String chosenWeighting,
@@ -52,7 +53,7 @@ public class OptimalRouteCoverageCalc {
         PointList pointList = rsp.getPoints();
         double distance = rsp.getDistance();
         long timeInMs = rsp.getTime();
-        OptimalRoute optimalRoute = new OptimalRoute(pointList, timeInMs);
+        OptimalRoute optimalRoute = new OptimalRoute(pointList, timeInMs, distance);
 
         //System.out.println("AStar bi - Distance: " + distance + ", time in millis: " + timeInMs);
         //System.out.println("Points:");
@@ -65,17 +66,18 @@ public class OptimalRouteCoverageCalc {
         return optimalRoute;
     }
 
-    public double calculateOptimalRouteCoverage(int id, List<Point2D.Double> realRoute, PointList optimalRoute,
-                                                long optimalRouteTime) {
+    public double calculateOptimalRouteCoverage(int id, List<PositionWithTimeData> realRoute, PointList optimalRoute,
+                                                long optimalRouteTime, double optimalRouteLength) {
         int counter = 1;
         double weightedCounter = 0;
         double routeLength = 0;
         for (int i = 1; i < realRoute.size(); i++) {
-            Point2D.Double point = realRoute.get(i);
+            Point2D.Double point = new Point2D.Double(realRoute.get(i).getLatitude(), realRoute.get(i).getLongitude());
             double pointLat = point.getX();
             double pointLong = point.getY() * Math.cos(Math.toRadians(pointLat));
 
-            Point2D.Double prevPoint = realRoute.get(i - 1);
+            Point2D.Double prevPoint = new Point2D.Double(realRoute.get(i - 1).getLatitude(),
+                    realRoute.get(i - 1).getLongitude());
             double prevPointLat = prevPoint.getX();
             double prevPointLong = prevPoint.getY() * Math.cos(Math.toRadians(prevPointLat));
 
@@ -136,7 +138,15 @@ public class OptimalRouteCoverageCalc {
         }
         try {
             PrintWriter printWriter = new PrintWriter(new FileWriter(Consts.OPTIMAL_COVERAGE_RESULTS_FILE, true));
-            printWriter.println(id + " " + weightedCounter / routeLength + " " + routeLength + " " + optimalRouteTime);
+            printWriter.print(id + " ");
+            printWriter.print(weightedCounter / routeLength + " "); //coverage ratio
+            printWriter.print(weightedCounter * DEGREE_TO_KILOMETERS_FACTOR + " "); //coverage in km
+            printWriter.print(routeLength * DEGREE_TO_KILOMETERS_FACTOR + " "); //route length in km
+            printWriter.print(optimalRouteTime + " ");
+            printWriter.print(optimalRouteLength / 1000 + " "); //optimal route length in km
+            printWriter.print(realRoute.get(0).getTimestamp() + " "); //start time
+            printWriter.print(realRoute.get(realRoute.size() - 1).getTimestamp()); //end time
+            printWriter.println();
             printWriter.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();

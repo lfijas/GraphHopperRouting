@@ -1,7 +1,6 @@
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint3D;
 
-import java.awt.geom.Point2D;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +15,9 @@ public class DataReader {
     private Connection conn;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
-    private List<Point2D.Double> resultPointsList;
 
-    public List<Point2D.Double> readDb(int id, String tableName, String orderByColumn) {
+    public List<PositionWithTimeData> readDb(int id, String tableName, String orderByColumn) {
+        List<PositionWithTimeData> resultPointsList = new ArrayList<PositionWithTimeData>();
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
@@ -36,13 +35,12 @@ public class DataReader {
             preparedStatement.setInt(1, id);
             resultSet = preparedStatement.executeQuery();
 
-            resultPointsList = new ArrayList<Point2D.Double>();
-
             while ((resultSet.next())) {
-                Double latitude = resultSet.getDouble("Latitude");
-                Double longitude = resultSet.getDouble("Longitude");
-                Point2D.Double point = new Point2D.Double(latitude, longitude);
-                resultPointsList.add(point);
+                PositionWithTimeData positionWithTimeData = new PositionWithTimeData();
+                positionWithTimeData.setLatitude(resultSet.getDouble("Latitude"));
+                positionWithTimeData.setLongitude(resultSet.getDouble("Longitude"));
+                positionWithTimeData.setTimestamp(resultSet.getTimestamp("Date"));
+                resultPointsList.add(positionWithTimeData);
             }
 
         } catch (ClassNotFoundException e) {

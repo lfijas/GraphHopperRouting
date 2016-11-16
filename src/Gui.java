@@ -86,18 +86,20 @@ public class Gui {
                     DataReader reader = new DataReader();
                     OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
 
-                    java.util.List<Point2D.Double> route = reader.readDb(id, Consts.TRAFFIC_TABLE, "date");
+                    java.util.List<PositionWithTimeData> route = reader.readDb(id, Consts.TRAFFIC_TABLE, "date");
 
                     if (route.size() > 0) {
-                        Point2D.Double startPoint = route.get(0);
-                        Point2D.Double finishPoint = route.get(route.size() - 1);
+                        Point2D.Double startPoint = new Point2D.Double(route.get(0).getLatitude(),
+                                route.get(0).getLongitude());
+                        Point2D.Double finishPoint = new Point2D.Double(route.get(route.size() - 1).getLatitude(),
+                                route.get(route.size() - 1).getLongitude());
 
                         OptimalRoute optimalRoute = optimalRouteCoverageCalc
                                 .findOptimalRoute(startPoint, finishPoint, Consts.FASTEST, hopper);
                         if (optimalRoute.getRoute() != null) {
                             reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute());
                             double pointsCoverage = optimalRouteCoverageCalc.calculateOptimalRouteCoverage(id, route,
-                                    optimalRoute.getRoute(), optimalRoute.getTime());
+                                    optimalRoute.getRoute(), optimalRoute.getTime(), optimalRoute.getRouteLength());
                             System.out.println("Route #" + id + " - pointsCoverage: " + pointsCoverage);
                             try {
                                 Desktop.getDesktop().browse(new URI("http://localhost/map.html?id=" + id));
@@ -127,11 +129,13 @@ public class Gui {
                     //for (int id = 1; id < 1000; id++) {
                     for (int id : selectedRoutes) {
 
-                        java.util.List<Point2D.Double> route = reader.readDb(id, Consts.TRAFFIC_WITHOUT_PARKING_TABLE, "date");
+                        java.util.List<PositionWithTimeData> route = reader.readDb(id, Consts.TRAFFIC_WITHOUT_PARKING_TABLE, "date");
 
                         if (route.size() > 10) {
-                            Point2D.Double startPoint = route.get(0);
-                            Point2D.Double finishPoint = route.get(route.size() - 1);
+                            Point2D.Double startPoint = new Point2D.Double(route.get(0).getLatitude(),
+                                    route.get(0).getLongitude());
+                            Point2D.Double finishPoint = new Point2D.Double(route.get(route.size() - 1).getLatitude(),
+                                    route.get(route.size() - 1).getLongitude());
                             OptimalRoute optimalRoute = optimalRouteCoverageCalc
                                     .findOptimalRoute(startPoint, finishPoint, chosenWeighting, hopper);
                             if (optimalRoute != null && optimalRoute.getRoute() != null) {
@@ -141,7 +145,7 @@ public class Gui {
                                 System.out.println("Route #" + id);
                                 double pointsCoverage = optimalRouteCoverageCalc
                                         .calculateOptimalRouteCoverage(id, route, optimalRoute.getRoute(),
-                                                optimalRoute.getTime());
+                                                optimalRoute.getTime(), optimalRoute.getRouteLength());
                                 System.out.println("PointsCoverage: " + pointsCoverage);
                             }
                         }
