@@ -124,7 +124,8 @@ public class Gui {
                     DataReader reader = new DataReader();
                     OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
 
-                    java.util.List<Integer> selectedRoutes = reader.readSelectedTrafficId(Consts.MORNING_TRAFFIC_QUERY);
+                    String columnToGet = "id";
+                    java.util.List<Integer> selectedRoutes = reader.readSelectedTrafficId(Consts.MORNING_TRAFFIC_QUERY, columnToGet);
 
                     //for (int id = 1; id < 1000; id++) {
                     for (int id : selectedRoutes) {

@@ -54,7 +54,7 @@ public class DataReader {
 
     }
 
-    public List<FullTrafficData> readFullTrafficData(int id, String tableName) {
+    public List<FullTrafficData> readFullTrafficData(int id, String tableName, String tag) {
         List<FullTrafficData> resultList = new ArrayList<FullTrafficData>();
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -62,8 +62,9 @@ public class DataReader {
             conn = DriverManager.getConnection(connAddr);
 
             preparedStatement = conn.prepareStatement("select * from yanosik." + tableName
-                    + " where id = ? order by Date");
+                    + " where id = ? and tag = ? order by Date");
             preparedStatement.setInt(1, id);
+            preparedStatement.setString(2, tag);
             resultSet = preparedStatement.executeQuery();
 
             while ((resultSet.next())) {
@@ -85,7 +86,7 @@ public class DataReader {
         return resultList;
     }
 
-    public List<Integer> readSelectedTrafficId(String query) {
+    public List<Integer> readSelectedTrafficId(String query, String columnName) {
         List<Integer> resultList = new ArrayList<>();
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -96,7 +97,7 @@ public class DataReader {
             resultSet = preparedStatement.executeQuery();
 
             while ((resultSet.next())) {
-                resultList.add(resultSet.getInt("Id"));
+                resultList.add(resultSet.getInt(columnName));
             }
 
         } catch (ClassNotFoundException e) {
