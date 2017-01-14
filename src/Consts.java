@@ -9,13 +9,13 @@ public class Consts {
     public static final String OPTIMAL_ROUTES_TABLE = "Optimal_routes";
     public static final String OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE = "Optimal_routes_with_traffic";
 
-    public static final boolean CONSIDER_TRAFFIC_FLAG = false;
+    public static final boolean CONSIDER_TRAFFIC_FLAG = true;
     public static final boolean STORE_EXTRA_CUSTOM_SPEED = true;
 
     public static final boolean SAVE_OPTIMAL_ROUTE_INTO_DB = false;
 
     public static final String OPTIMAL_COVERAGE_RESULTS_FILE
-            = "/home/lukasz/Pulpit/Results_WAW/results_custom_speed_default_route_wo_parking_waw_12_0800_0815.txt";
+            = "/home/lukasz/Pulpit/Results_WAW/results_custom_speed_custom_route_wo_parking_waw_19_1715_1730.txt";
 
     public static final String SHORTEST = "shortest";
     public static final String FASTEST = "fastest";
@@ -27,7 +27,12 @@ public class Consts {
             "(" +
             "SELECT id, original_id, min(date) as start_date,tag FROM `Traffic_without_parking` group by id" +
             ") as a " +
-            "where a.start_date between '2015-02-12 08:00:00' AND '2015-02-12 08:15:00'" +
+            "where a.start_date between '2015-02-19 17:15:00' AND '2015-02-19 17:30:00'" +
             " AND (a.tag = 'WAW' OR a.tag = 'WWW')";
+
+    public static final String LOAD_TRAFFIC_QUERY = "SELECT * " +
+            "FROM Traffic_with_speed " +
+            "WHERE Date BETWEEN '2015-02-19 17:15:00' AND '2015-02-19 17:30:00' " +
+            "AND Tag = 'WAW'";
 
 }

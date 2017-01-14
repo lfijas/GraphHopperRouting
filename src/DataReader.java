@@ -54,17 +54,14 @@ public class DataReader {
 
     }
 
-    public List<FullTrafficData> readFullTrafficData(int id, String tableName, String tag) {
+    public List<FullTrafficData> readFullTrafficData() {
         List<FullTrafficData> resultList = new ArrayList<FullTrafficData>();
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
             conn = DriverManager.getConnection(connAddr);
 
-            preparedStatement = conn.prepareStatement("select * from yanosik." + tableName
-                    + " where id = ? and tag = ? order by Date");
-            preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, tag);
+            preparedStatement = conn.prepareStatement(Consts.LOAD_TRAFFIC_QUERY);
             resultSet = preparedStatement.executeQuery();
 
             while ((resultSet.next())) {
