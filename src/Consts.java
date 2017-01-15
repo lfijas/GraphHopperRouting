@@ -22,13 +22,15 @@ public class Consts {
     public static final String CURRENT_TRAFFIC = "current_traffic";
 
     //SQL queries
-    public static final String MORNING_TRAFFIC_QUERY = "select a.id, a.original_id " +
-            "from " +
+    public static final String ROUTES_TO_ANALYZE_QUERY = "SELECT a.id " +
+            "FROM " +
             "(" +
-            "SELECT id, original_id, min(date) as start_date,tag FROM `Traffic_without_parking` group by id" +
+            "SELECT id, min(date) as start_date " +
+            "FROM `Traffic_without_parking` " +
+            "WHERE tag = 'WAW' OR tag = 'WWW' " +
+            "group by id" +
             ") as a " +
-            "where a.start_date between '2015-02-19 17:15:00' AND '2015-02-19 17:30:00'" +
-            " AND (a.tag = 'WAW' OR a.tag = 'WWW')";
+            "where a.start_date between '2015-02-19 17:15:00' AND '2015-02-19 17:30:00'";
 
     public static final String LOAD_TRAFFIC_QUERY = "SELECT * " +
             "FROM Traffic_with_speed " +
