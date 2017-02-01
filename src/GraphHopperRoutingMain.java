@@ -25,6 +25,12 @@ public class GraphHopperRoutingMain {
     public static void main(String[] args) {
 
         System.out.println("Program started");
+        //parsing arguments
+        String startDate = args[0];
+        String endDate = args[1];
+        boolean isTrafficConsidered = Boolean.parseBoolean(args[2]);
+        String resultsFileName = args[3];
+
 
         MyGraphHopper hopper = new MyGraphHopper();
         hopper.setOSMFile(OSM_FILE_PATH_WAW);
@@ -35,11 +41,11 @@ public class GraphHopperRoutingMain {
         hopper.setEncodingManager(new CustomEncodingManager(CustomEncodingManager.CUSTOM_CAR));
         hopper.setCHEnable(false);
         hopper.importOrLoad();
-        if (Consts.CONSIDER_TRAFFIC_FLAG || Consts.STORE_EXTRA_CUSTOM_SPEED) {
-            hopper.loadTrafficData();
+        if (isTrafficConsidered || Consts.STORE_EXTRA_CUSTOM_SPEED) {
+            hopper.loadTrafficData(startDate, endDate, isTrafficConsidered);
         }
 
-        new Gui(hopper);
+        new Gui(hopper, startDate, endDate, isTrafficConsidered, resultsFileName);
 
     }
 

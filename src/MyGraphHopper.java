@@ -24,7 +24,7 @@ public class MyGraphHopper extends GraphHopper {
         }
     }
 
-    public void loadTrafficData() {
+    public void loadTrafficData(String startDate, String endDate, boolean isTrafficConsidered) {
         LocationIndex locationIndex = getLocationIndex();
         FlagEncoder customCarEncoder = getEncodingManager().getEncoder(CustomEncodingManager.CUSTOM_CAR);
         //FlagEncoder customCarEncoder = getEncodingManager().getEncoder("car");
@@ -32,7 +32,7 @@ public class MyGraphHopper extends GraphHopper {
 
         DataReader reader = new DataReader();
 
-        List<FullTrafficData> fullTrafficDataList = reader.readFullTrafficData();
+        List<FullTrafficData> fullTrafficDataList = reader.readFullTrafficData(startDate, endDate);
         for (FullTrafficData point : fullTrafficDataList) {
             double latitude = point.getLatitude();
             double longitude = point.getLongitude();
@@ -49,7 +49,7 @@ public class MyGraphHopper extends GraphHopper {
                     newSpeed = (2 * oldSpeed + speed) / 3;
                     modifiedEdges.put(edgeId, 3);
                 } else {
-                    if (!Consts.CONSIDER_TRAFFIC_FLAG) {
+                    if (!isTrafficConsidered) {
                         //System.out.println("Old speed: " + oldSpeed);
                         oldSpeed = customCarEncoder.getDouble(existingFlags,
                                 CustomCarFlagEncoder.CUSTOM_SPEED_KEY);
@@ -58,13 +58,13 @@ public class MyGraphHopper extends GraphHopper {
                     newSpeed = oldSpeed + speed / ++numberOfSamples;
                     modifiedEdges.put(edgeId, numberOfSamples);
                 }
-                if (Consts.CONSIDER_TRAFFIC_FLAG) {
+                if (isTrafficConsidered) {
                     edge.setFlags(customCarEncoder.setSpeed(existingFlags, newSpeed));
                         System.out.println("Edge " + edgeId + " speed changed from " + oldSpeed + " to " + newSpeed +
                                 ", number of samples: " + numberOfSamples);
                 }
                 if (Consts.STORE_EXTRA_CUSTOM_SPEED) {
-                    if (Consts.CONSIDER_TRAFFIC_FLAG) {
+                    if (isTrafficConsidered) {
                         existingFlags = edge.getFlags();
                     }
                     edge.setFlags(customCarEncoder.setDouble(existingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY,

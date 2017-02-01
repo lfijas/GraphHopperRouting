@@ -67,7 +67,8 @@ public class OptimalRouteCoverageCalc {
     }
 
     public double calculateOptimalRouteCoverage(int id, List<PositionWithTimeData> realRoute, PointList optimalRoute,
-                                                long optimalRouteTime, double optimalRouteLength) {
+                                                long optimalRouteTime, double optimalRouteLength,
+                                                String resultsFileName) {
         int counter = 1;
         double weightedCounter = 0;
         double routeLength = 0;
@@ -137,7 +138,7 @@ public class OptimalRouteCoverageCalc {
             }
         }
         try {
-            PrintWriter printWriter = new PrintWriter(new FileWriter(Consts.OPTIMAL_COVERAGE_RESULTS_FILE, true));
+            PrintWriter printWriter = new PrintWriter(new FileWriter(resultsFileName, true));
             printWriter.print(id + " ");
             printWriter.print(weightedCounter / routeLength + " "); //coverage ratio
             printWriter.print(weightedCounter * DEGREE_TO_KILOMETERS_FACTOR + " "); //coverage in km

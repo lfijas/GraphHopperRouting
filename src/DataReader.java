@@ -54,14 +54,21 @@ public class DataReader {
 
     }
 
-    public List<FullTrafficData> readFullTrafficData() {
+    public List<FullTrafficData> readFullTrafficData(String startDate, String endDate) {
         List<FullTrafficData> resultList = new ArrayList<FullTrafficData>();
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
             conn = DriverManager.getConnection(connAddr);
 
-            preparedStatement = conn.prepareStatement(Consts.LOAD_TRAFFIC_QUERY);
+            String sqlQuery = "SELECT * " +
+                    "FROM Traffic_with_speed " +
+                    "WHERE Date BETWEEN ? AND ? " +
+                    "AND Tag = 'WAW'";
+
+            preparedStatement = conn.prepareStatement(sqlQuery);
+            preparedStatement.setString(1, startDate);
+            preparedStatement.setString(2, endDate);
             resultSet = preparedStatement.executeQuery();
 
             while ((resultSet.next())) {
@@ -83,14 +90,26 @@ public class DataReader {
         return resultList;
     }
 
-    public List<Integer> readSelectedTrafficId(String query, String columnName) {
+    public List<Integer> readSelectedTrafficId(String startDate, String endDate, String columnName) {
         List<Integer> resultList = new ArrayList<>();
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
             conn = DriverManager.getConnection(connAddr);
 
-            preparedStatement = conn.prepareStatement(query);
+            String sqlQuery = "SELECT a.id " +
+                    "FROM " +
+                    "(" +
+                    "SELECT id, min(date) as start_date " +
+                    "FROM `Traffic_without_parking` " +
+                    "WHERE tag = 'WAW' OR tag = 'WWW' " +
+                    "group by id" +
+                    ") as a " +
+                    "where a.start_date between ? AND ?";
+
+            preparedStatement = conn.prepareStatement(sqlQuery);
+            preparedStatement.setString(1, startDate);
+            preparedStatement.setString(2, endDate);
             resultSet = preparedStatement.executeQuery();
 
             while ((resultSet.next())) {
@@ -107,15 +126,15 @@ public class DataReader {
         return resultList;
     }
 
-    public void saveOptimalRouteIntoDb(int routeId, PointList optimalRoute) {
+    public void saveOptimalRouteIntoDb(int routeId, PointList optimalRoute, boolean isTrafficConsidered) {
 
-        deleteOptimalRouteFromDb(routeId);
+        deleteOptimalRouteFromDb(routeId, isTrafficConsidered);
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(connAddr);
             String tableName = Consts.OPTIMAL_ROUTES_TABLE;
-            if (Consts.CONSIDER_TRAFFIC_FLAG) {
+            if (isTrafficConsidered) {
                 tableName = Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE;
             }
             String sql = "insert into yanosik." + tableName +
@@ -139,12 +158,12 @@ public class DataReader {
         }
     }
 
-    private void deleteOptimalRouteFromDb(int routeId) {
+    private void deleteOptimalRouteFromDb(int routeId, boolean isTrafficConsidered) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(connAddr);
             String tableName = Consts.OPTIMAL_ROUTES_TABLE;
-            if (Consts.CONSIDER_TRAFFIC_FLAG) {
+            if (isTrafficConsidered) {
                 tableName = Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE;
             }
             String sql = "delete from yanosik." + tableName + " where id = ?";

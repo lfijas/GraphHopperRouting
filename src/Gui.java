@@ -97,10 +97,10 @@ public class Gui {
                         OptimalRoute optimalRoute = optimalRouteCoverageCalc
                                 .findOptimalRoute(startPoint, finishPoint, Consts.FASTEST, hopper);
                         if (optimalRoute.getRoute() != null) {
-                            reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute());
-                            double pointsCoverage = optimalRouteCoverageCalc.calculateOptimalRouteCoverage(id, route,
-                                    optimalRoute.getRoute(), optimalRoute.getTime(), optimalRoute.getRouteLength());
-                            System.out.println("Route #" + id + " - pointsCoverage: " + pointsCoverage);
+//                            reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute());
+//                            double pointsCoverage = optimalRouteCoverageCalc.calculateOptimalRouteCoverage(id, route,
+//                                    optimalRoute.getRoute(), optimalRoute.getTime(), optimalRoute.getRouteLength());
+//                            System.out.println("Route #" + id + " - pointsCoverage: " + pointsCoverage);
                             try {
                                 Desktop.getDesktop().browse(new URI("http://localhost/map.html?id=" + id));
                             } catch (IOException e) {
@@ -121,36 +121,8 @@ public class Gui {
                 if (Consts.FASTEST.equals(chosenWeighting)
                         || Consts.SHORTEST.equals(chosenWeighting)
                         || Consts.CURRENT_TRAFFIC.equals(chosenWeighting)) {
-                    DataReader reader = new DataReader();
-                    OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
+                    //calculateRoutes(hopper, chosenWeighting);
 
-                    String columnToGet = "id";
-                    java.util.List<Integer> selectedRoutes = reader.readSelectedTrafficId(Consts.ROUTES_TO_ANALYZE_QUERY, columnToGet);
-
-                    //for (int id = 1; id < 1000; id++) {
-                    for (int id : selectedRoutes) {
-
-                        java.util.List<PositionWithTimeData> route = reader.readDb(id, Consts.TRAFFIC_WITHOUT_PARKING_TABLE, "date");
-
-                        if (route.size() > 10) {
-                            Point2D.Double startPoint = new Point2D.Double(route.get(0).getLatitude(),
-                                    route.get(0).getLongitude());
-                            Point2D.Double finishPoint = new Point2D.Double(route.get(route.size() - 1).getLatitude(),
-                                    route.get(route.size() - 1).getLongitude());
-                            OptimalRoute optimalRoute = optimalRouteCoverageCalc
-                                    .findOptimalRoute(startPoint, finishPoint, chosenWeighting, hopper);
-                            if (optimalRoute != null && optimalRoute.getRoute() != null) {
-                                if (Consts.SAVE_OPTIMAL_ROUTE_INTO_DB) {
-                                    reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute());
-                                }
-                                System.out.println("Route #" + id);
-                                double pointsCoverage = optimalRouteCoverageCalc
-                                        .calculateOptimalRouteCoverage(id, route, optimalRoute.getRoute(),
-                                                optimalRoute.getTime(), optimalRoute.getRouteLength());
-                                System.out.println("PointsCoverage: " + pointsCoverage);
-                            }
-                        }
-                    }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Proszę wybrać opcje trasy");
                 }
@@ -168,6 +140,44 @@ public class Gui {
 //                    "point_order");
 //            optimalRouteCoverageCalc.compareOptimalRoutesTime(route, Consts.FASTEST, hopper);
 //        }
+    }
+
+    public Gui(MyGraphHopper hopper, String startDate, String endDate,boolean isTrafficConsidered,
+               String resultsFileName) {
+        calculateRoutes(hopper, Consts.FASTEST, startDate, endDate, isTrafficConsidered, resultsFileName);
+    }
+
+    private void calculateRoutes(MyGraphHopper hopper, String chosenWeighting, String startDate, String endDate,
+                                 boolean isTrafficConsidered, String resultsFileName) {
+        DataReader reader = new DataReader();
+        OptimalRouteCoverageCalc optimalRouteCoverageCalc = new OptimalRouteCoverageCalc();
+
+        String columnToGet = "id";
+        java.util.List<Integer> selectedRoutes = reader.readSelectedTrafficId(startDate, endDate, columnToGet);
+
+        for (int id : selectedRoutes) {
+
+            java.util.List<PositionWithTimeData> route = reader.readDb(id, Consts.TRAFFIC_WITHOUT_PARKING_TABLE, "date");
+
+            if (route.size() > 10) {
+                Point2D.Double startPoint = new Point2D.Double(route.get(0).getLatitude(),
+                        route.get(0).getLongitude());
+                Point2D.Double finishPoint = new Point2D.Double(route.get(route.size() - 1).getLatitude(),
+                        route.get(route.size() - 1).getLongitude());
+                OptimalRoute optimalRoute = optimalRouteCoverageCalc
+                        .findOptimalRoute(startPoint, finishPoint, chosenWeighting, hopper);
+                if (optimalRoute != null && optimalRoute.getRoute() != null) {
+                    if (Consts.SAVE_OPTIMAL_ROUTE_INTO_DB) {
+                        reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute(), isTrafficConsidered);
+                    }
+                    System.out.println("Route #" + id);
+                    double pointsCoverage = optimalRouteCoverageCalc
+                            .calculateOptimalRouteCoverage(id, route, optimalRoute.getRoute(),
+                                    optimalRoute.getTime(), optimalRoute.getRouteLength(), resultsFileName);
+                    System.out.println("PointsCoverage: " + pointsCoverage);
+                }
+            }
+        }
     }
 
     private String getChosenWeighting() {
