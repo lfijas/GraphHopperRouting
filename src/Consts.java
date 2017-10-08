@@ -15,11 +15,15 @@ public class Consts {
     public static final boolean SAVE_OPTIMAL_ROUTE_INTO_DB = false;
 
     public static final String OPTIMAL_COVERAGE_RESULTS_FILE
-            = "/home/lukasz/Pulpit/Results_WAW/results_custom_speed_custom_route_wo_parking_waw_19_1715_1730.txt";
+            = "/home/lukasz/Pulpit/Results_WAW_Bridges/results_custom_speed_custom_route_wo_parking_waw_19_1715_1730.txt";
 
     public static final String SHORTEST = "shortest";
     public static final String FASTEST = "fastest";
     public static final String CURRENT_TRAFFIC = "current_traffic";
+
+    public static final String BRIDGES_REAL_SUFFIX = "_bridges_real";
+    public static final String BRIDGES_BLIND_SUFFIX = "_bridges_blind";
+    public static final String BRIDGES_CONSIDER_TRAFFIC_SUFFIX = "_bridges_traffic";
 
     //SQL queries
     public static final String ROUTES_TO_ANALYZE_QUERY = "SELECT a.id " +

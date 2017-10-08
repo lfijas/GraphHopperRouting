@@ -171,10 +171,23 @@ public class Gui {
                         reader.saveOptimalRouteIntoDb(id, optimalRoute.getRoute(), isTrafficConsidered);
                     }
                     System.out.println("Route #" + id);
-                    double pointsCoverage = optimalRouteCoverageCalc
-                            .calculateOptimalRouteCoverage(id, route, optimalRoute.getRoute(),
-                                    optimalRoute.getTime(), optimalRoute.getRouteLength(), resultsFileName);
-                    System.out.println("PointsCoverage: " + pointsCoverage);
+//                    double pointsCoverage = optimalRouteCoverageCalc
+//                            .calculateOptimalRouteCoverage(id, route, optimalRoute.getRoute(),
+//                                    optimalRoute.getTime(), optimalRoute.getRouteLength(), resultsFileName);
+//                    System.out.println("PointsCoverage: " + pointsCoverage);
+                    final String txtFileFormat = ".txt";
+                    String bridgesOnRealRouteResultsFileName = resultsFileName.replace(txtFileFormat,
+                            Consts.BRIDGES_REAL_SUFFIX + txtFileFormat);
+                    String bridgesOnOptimalRouteResultsFileName;
+                    if (isTrafficConsidered) {
+                        bridgesOnOptimalRouteResultsFileName = resultsFileName.replace(txtFileFormat,
+                                Consts.BRIDGES_CONSIDER_TRAFFIC_SUFFIX + txtFileFormat);
+                    } else {
+                        bridgesOnOptimalRouteResultsFileName = resultsFileName.replace(txtFileFormat,
+                                Consts.BRIDGES_BLIND_SUFFIX + txtFileFormat);
+                    }
+                    optimalRouteCoverageCalc.findBridgesOnTheRoute(id, route, optimalRoute.getRoute(), hopper,
+                            bridgesOnRealRouteResultsFileName, bridgesOnOptimalRouteResultsFileName, isTrafficConsidered);
                 }
             }
         }

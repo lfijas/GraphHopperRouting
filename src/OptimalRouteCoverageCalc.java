@@ -1,6 +1,7 @@
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.routing.AlgorithmOptions;
+import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint3D;
 
@@ -9,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,7 +29,7 @@ public class OptimalRouteCoverageCalc {
 
 
     public OptimalRoute findOptimalRoute(Point2D.Double startPoint, Point2D.Double finishPoint, String chosenWeighting,
-                                      MyGraphHopper hopper) {
+                                         MyGraphHopper hopper) {
 
         //System.out.println("StartPoint - Latitude: " + startPoint.getX() + ", Long: " + startPoint.getY());
         //System.out.println("EndPoint - Latitude: " + finishPoint.getX() + ", Long: " + finishPoint.getY());
@@ -40,11 +42,11 @@ public class OptimalRouteCoverageCalc {
 
         GHResponse rsp = hopper.route(req);
 
-        if(rsp.hasErrors()) {
+        if (rsp.hasErrors()) {
             System.out.println("Errors!!!");
             List<Throwable> errorList = rsp.getErrors();
             System.out.println("errorList size: " + errorList.size());
-            for(Throwable e : errorList) {
+            for (Throwable e : errorList) {
                 e.printStackTrace();
             }
             return null;
@@ -118,7 +120,7 @@ public class OptimalRouteCoverageCalc {
                             x >= beginningPointLong && x <= endPointLong)
                             &&
                             (y >= endPointLat && y <= beginningPointLat ||
-                                y >= beginningPointLat && y <= endPointLat)) {
+                                    y >= beginningPointLat && y <= endPointLat)) {
 
                         //then calculate the distance from point describing real route to the line describing optimal
                         // route
@@ -156,7 +158,169 @@ public class OptimalRouteCoverageCalc {
         }
         System.out.println("Optimal route weighted coverage: " + weightedCounter / routeLength);
         System.out.println("Number of points on optimal route: " + counter + "/" + realRoute.size());
-        return (double) counter/realRoute.size();
+        return (double) counter / realRoute.size();
+    }
+
+    public void findBridgesOnTheRoute(int id, List<PositionWithTimeData> realRoute, PointList optimalRoute,
+                                      MyGraphHopper hopper, String realRouteResultsFileName,
+                                      String optimalRouteResultsFileName,
+                                      boolean isTrafficConsidered) {
+
+        ArrayList<Bridge> bridgesInWarsaw = Utils.getWarsawBridges();
+        LocationIndex locationIndex = hopper.getLocationIndex();
+
+        if (!isTrafficConsidered) {
+            //bridges on real route
+            for (int i = 0; i < realRoute.size() - 3 ; i++) {
+
+                double beginningPointLat = realRoute.get(i).getLatitude();
+                double beginningPointLong = realRoute.get(i).getLongitude()
+                        * Math.cos(Math.toRadians(beginningPointLat));
+
+                double endPointLat = realRoute.get(i + 3).getLatitude();
+                double endPointLong = realRoute.get(i + 3).getLongitude() * Math.cos(Math.toRadians(endPointLat));
+
+                for (Bridge bridge : bridgesInWarsaw) {
+
+                    double bridgeLat = bridge.getLatitude();
+                    double bridgeLong = bridge.getLongitude() * Math.cos(Math.toRadians(bridgeLat));
+
+                    double distance = castPointOnEdge(beginningPointLat, beginningPointLong, endPointLat, endPointLong,
+                            bridgeLat, bridgeLong);
+                    if (distance != -1 && distance <= LAT_MARGIN) {
+                        try {
+                            PrintWriter printWriter = new PrintWriter(new FileWriter(realRouteResultsFileName, true));
+                            printWriter.print(id + " "); //route id
+                            printWriter.print(bridge.getId() + " "); //found bridge id
+                            printWriter.print(realRoute.get(i).getTimestamp()); //timestamp
+                            printWriter.println();
+                            printWriter.close();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+//                QueryResult qr = locationIndex.findClosest(realRoute.get(i).getLatitude(),
+//                        realRoute.get(i).getLongitude(), EdgeFilter.ALL_EDGES);
+//                int edgeId = qr.getClosestEdge().getEdge();
+//                for (Bridge bridge : bridgesInWarsaw) {
+//                    int bridgeEdgeId = bridge.getBridgeAsEdge(hopper);
+//                    if (edgeId == bridgeEdgeId) {
+//                        System.out.println("id: " + id + ", bridge id: " + bridge.getId() + ", timestamp: "
+//                                + realRoute.get(i).getTimestamp());
+//                        try {
+//                            PrintWriter printWriter = new PrintWriter(new FileWriter(realRouteResultsFileName, true));
+//                            printWriter.print(id + " "); //route id
+//                            printWriter.print(bridge.getId() + " "); //found bridge id
+//                            printWriter.print(realRoute.get(i).getTimestamp()); //timestamp
+//                            printWriter.println();
+//                            printWriter.close();
+//                        } catch (FileNotFoundException e) {
+//                            e.printStackTrace();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                        break;
+//                    }
+//                }
+            }
+        }
+
+        //bridges on optimal route
+        for (int i = 0; i < optimalRoute.size() - 1; i++) {
+
+            double beginningPointLat = optimalRoute.getLat(i);
+            double beginningPointLong = optimalRoute.getLon(i) * Math.cos(Math.toRadians(beginningPointLat));
+
+            double endPointLat = optimalRoute.getLat(i + 1);
+            double endPointLong = optimalRoute.getLon(i + 1) * Math.cos(Math.toRadians(endPointLat));
+
+            for (Bridge bridge : bridgesInWarsaw) {
+
+                double bridgeLat = bridge.getLatitude();
+                double bridgeLong = bridge.getLongitude() * Math.cos(Math.toRadians(bridgeLat));
+
+                double distance = castPointOnEdge(beginningPointLat, beginningPointLong, endPointLat, endPointLong,
+                        bridgeLat, bridgeLong);
+                if (distance != -1 && distance <= LAT_MARGIN) {
+                    try {
+                        PrintWriter printWriter = new PrintWriter(new FileWriter(optimalRouteResultsFileName, true));
+                        printWriter.print(id + " "); //route id
+                        printWriter.print(bridge.getId() + " "); //found bridge id
+                        printWriter.println();
+                        printWriter.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+//            QueryResult qr = locationIndex.findClosest(optimalRoute.getLat(i),
+//                    optimalRoute.getLon(i), EdgeFilter.ALL_EDGES);
+//            int edgeId = qr.getClosestEdge().getEdge();
+//            for (Bridge bridge : bridgesInWarsaw) {
+//                int bridgeEdgeId = bridge.getBridgeAsEdge(hopper);
+//                if (edgeId == bridgeEdgeId) {
+//                    System.out.println("id: " + id + ", bridge id: " + bridge.getId());
+//                    try {
+//                        PrintWriter printWriter = new PrintWriter(new FileWriter(optimalRouteResultsFileName, true));
+//                        printWriter.print(id + " "); //route id
+//                        printWriter.print(bridge.getId() + " "); //found bridge id
+//                        printWriter.println();
+//                        printWriter.close();
+//                    } catch (FileNotFoundException e) {
+//                        e.printStackTrace();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    break;
+//                }
+//            }
+        }
+
+    }
+
+    private double castPointOnEdge(double beginningPointLat, double beginningPointLong, double endPointLat,
+                                   double endPointLong, double pointLat, double pointLong) {
+
+        double distance = -1;
+
+        //line given by equation ax + by + c = 0
+        double a = beginningPointLat - endPointLat;
+        double b = endPointLong - beginningPointLong;
+        double c = endPointLat * beginningPointLong - beginningPointLat * endPointLong;
+
+        //line vertical to given line: (-b/a)x + y - d = 0
+        double a2 = (-1) * b / a;
+        double d = pointLat + a2 * pointLong;
+
+        //determinants
+        double w = a - b * a2;
+        double wx = (-1) * c - b * d;
+        double wy = a * d + c * a2;
+
+        if (w != 0) {
+            double x = wx / w;
+            double y = wy / w;
+
+            //check if point is on defined line segment
+            if ((x >= endPointLong && x <= beginningPointLong ||
+                    x >= beginningPointLong && x <= endPointLong)
+                    &&
+                    (y >= endPointLat && y <= beginningPointLat ||
+                            y >= beginningPointLat && y <= endPointLat)) {
+                //then calculate the distance from point describing real route to the line describing optimal
+                // route
+                distance = Math.abs(a * pointLong + b * pointLat + c)
+                        / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+            }
+        }
+        return distance;
     }
 
     public void compareOptimalRoutesTime(List<Point2D.Double> route, String chosenWeighting,
