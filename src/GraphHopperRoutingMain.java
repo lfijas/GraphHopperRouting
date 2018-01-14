@@ -1,3 +1,14 @@
+import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.naming.spi.InitialContextFactory;
+import javax.naming.spi.InitialContextFactoryBuilder;
+import javax.naming.spi.NamingManager;
+import javax.sql.DataSource;
+import java.util.Hashtable;
+
 /**
  * Created by lukasz on 13.10.15.
  */
@@ -31,6 +42,7 @@ public class GraphHopperRoutingMain {
         boolean isTrafficConsidered = Boolean.parseBoolean(args[2]);
         String resultsFileName = args[3];
 
+        setupInitialContext();
 
         MyGraphHopper hopper = new MyGraphHopper();
         hopper.setOSMFile(OSM_FILE_PATH_WAW);
@@ -47,6 +59,44 @@ public class GraphHopperRoutingMain {
 
         new Gui(hopper, startDate, endDate, isTrafficConsidered, resultsFileName);
 
+    }
+
+    private static void setupInitialContext() {
+        try {
+            NamingManager.setInitialContextFactoryBuilder(new InitialContextFactoryBuilder() {
+                @Override
+                public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> hashtable) throws NamingException {
+                    return new InitialContextFactory() {
+                        @Override
+                        public Context getInitialContext(Hashtable<?, ?> hashtable) throws NamingException {
+                            return new InitialContext() {
+                                private Hashtable<String, DataSource> dataSources = new Hashtable<>();
+
+                                @Override
+                                public Object lookup(String name) throws NamingException {
+
+                                    if (dataSources.isEmpty()) {
+                                        MysqlConnectionPoolDataSource ds = new MysqlConnectionPoolDataSource();
+                                        ds.setURL("jdbc:mysql://localhost/yanosik");
+                                        ds.setUser("root");
+                                        ds.setPassword("admin");
+                                        dataSources.put(Consts.DATA_SOURCE_NAME, ds);
+                                    }
+
+                                    if (dataSources.containsKey(name)) {
+                                        return dataSources.get(name);
+                                    }
+
+                                    throw new NamingException("Unable to find datasource: " + name);
+                                }
+                            };
+                        }
+                    };
+                }
+            });
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
     }
 
 }

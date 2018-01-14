@@ -186,8 +186,10 @@ public class Gui {
                         bridgesOnOptimalRouteResultsFileName = resultsFileName.replace(txtFileFormat,
                                 Consts.BRIDGES_BLIND_SUFFIX + txtFileFormat);
                     }
-                    optimalRouteCoverageCalc.findBridgesOnTheRoute(id, route, optimalRoute.getRoute(), hopper,
-                            bridgesOnRealRouteResultsFileName, bridgesOnOptimalRouteResultsFileName, isTrafficConsidered);
+                    optimalRouteCoverageCalc.findBridgesOnTheRoute(id, route, optimalRoute.getRoute(),
+                            optimalRoute.getTime(), optimalRoute.getRouteLength(), hopper,
+                            bridgesOnRealRouteResultsFileName, bridgesOnOptimalRouteResultsFileName,
+                            isTrafficConsidered);
                 }
             }
         }

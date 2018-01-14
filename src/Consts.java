@@ -3,6 +3,8 @@
  */
 public class Consts {
 
+    public static final String DATA_SOURCE_NAME = "jdbc/yanosik";
+
     public static final String TRAFFIC_TABLE = "Traffic";
     public static final String TRAFFIC_WITHOUT_PARKING_TABLE = "Traffic_without_parking";
     public static final String TRAFFIC_WITH_SPEED_TABLE= "Traffic_with_speed";

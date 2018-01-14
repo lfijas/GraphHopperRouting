@@ -162,8 +162,8 @@ public class OptimalRouteCoverageCalc {
     }
 
     public void findBridgesOnTheRoute(int id, List<PositionWithTimeData> realRoute, PointList optimalRoute,
-                                      MyGraphHopper hopper, String realRouteResultsFileName,
-                                      String optimalRouteResultsFileName,
+                                      long optimalRouteTime, double optimalRouteLength, MyGraphHopper hopper,
+                                      String realRouteResultsFileName, String optimalRouteResultsFileName,
                                       boolean isTrafficConsidered) {
 
         ArrayList<Bridge> bridgesInWarsaw = Utils.getWarsawBridges();
@@ -192,7 +192,9 @@ public class OptimalRouteCoverageCalc {
                             PrintWriter printWriter = new PrintWriter(new FileWriter(realRouteResultsFileName, true));
                             printWriter.print(id + " "); //route id
                             printWriter.print(bridge.getId() + " "); //found bridge id
-                            printWriter.print(realRoute.get(i).getTimestamp()); //timestamp
+                            printWriter.print(realRoute.get(0).getTimestamp() + " "); //start time
+                            printWriter.print(realRoute.get(i).getTimestamp() + " "); //timestamp on the bridge
+                            printWriter.print(realRoute.get(realRoute.size() - 1).getTimestamp()); //end time
                             printWriter.println();
                             printWriter.close();
                         } catch (FileNotFoundException e) {
@@ -250,6 +252,8 @@ public class OptimalRouteCoverageCalc {
                         PrintWriter printWriter = new PrintWriter(new FileWriter(optimalRouteResultsFileName, true));
                         printWriter.print(id + " "); //route id
                         printWriter.print(bridge.getId() + " "); //found bridge id
+                        printWriter.print(optimalRouteTime + " ");
+                        printWriter.print(optimalRouteLength / 1000 + " "); //optimal route length in km
                         printWriter.println();
                         printWriter.close();
                     } catch (FileNotFoundException e) {

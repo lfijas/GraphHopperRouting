@@ -1,7 +1,12 @@
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint3D;
 
-import java.sql.*;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +26,8 @@ public class DataReader {
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
-            conn = DriverManager.getConnection(connAddr);
+            DataSource ds = DataSourceProvider.provideDataSource();
+            conn = ds.getConnection();
 
             //statement = conn.createStatement();
             //resultSet = statement.executeQuery("select * from yanosik.Traffic where id = 2 order by Date");
@@ -47,6 +53,8 @@ public class DataReader {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (NamingException e) {
+            e.printStackTrace();
         } finally {
             close();
         }
@@ -59,7 +67,8 @@ public class DataReader {
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
-            conn = DriverManager.getConnection(connAddr);
+            DataSource ds = DataSourceProvider.provideDataSource();
+            conn = ds.getConnection();
 
             String sqlQuery = "SELECT * " +
                     "FROM Traffic_with_speed " +
@@ -84,6 +93,8 @@ public class DataReader {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (NamingException e) {
+            e.printStackTrace();
         } finally {
             close();
         }
@@ -95,7 +106,8 @@ public class DataReader {
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
-            conn = DriverManager.getConnection(connAddr);
+            DataSource ds = DataSourceProvider.provideDataSource();
+            conn = ds.getConnection();
 
             String sqlQuery = "SELECT a.id " +
                     "FROM " +
@@ -120,6 +132,8 @@ public class DataReader {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (NamingException e) {
+            e.printStackTrace();
         } finally {
             close();
         }
@@ -132,7 +146,10 @@ public class DataReader {
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(connAddr);
+
+            DataSource ds = DataSourceProvider.provideDataSource();
+            conn = ds.getConnection();
+
             String tableName = Consts.OPTIMAL_ROUTES_TABLE;
             if (isTrafficConsidered) {
                 tableName = Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE;
@@ -153,6 +170,8 @@ public class DataReader {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (NamingException e) {
+            e.printStackTrace();
         } finally {
             close();
         }
@@ -161,7 +180,10 @@ public class DataReader {
     private void deleteOptimalRouteFromDb(int routeId, boolean isTrafficConsidered) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(connAddr);
+
+            DataSource ds = DataSourceProvider.provideDataSource();
+            conn = ds.getConnection();
+
             String tableName = Consts.OPTIMAL_ROUTES_TABLE;
             if (isTrafficConsidered) {
                 tableName = Consts.OPTIMAL_ROUTES_WITH_TRAFFIC_TABLE;
@@ -173,6 +195,8 @@ public class DataReader {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NamingException e) {
             e.printStackTrace();
         } finally {
             close();

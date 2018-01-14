@@ -21,6 +21,7 @@ public class Utils {
         warsawBridges.add(new Bridge(6, "Gdański", 52.260833, 21.01));
         warsawBridges.add(new Bridge(7, "Grota-Rowieckiego", 52.287222, 20.995278));
         warsawBridges.add(new Bridge(8, "Północny", 52.307222, 20.950833));
+        warsawBridges.add(new Bridge(9, "Góra Kalwaria", 51.990556, 21.234722));
 
         return warsawBridges;
     }
