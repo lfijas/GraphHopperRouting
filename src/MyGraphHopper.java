@@ -24,6 +24,24 @@ public class MyGraphHopper extends GraphHopper {
         }
     }
 
+    public void blockEdge(double latitude, double longitude) {
+        LocationIndex locationIndex = getLocationIndex();
+        FlagEncoder customCarEncoder = getEncodingManager().getEncoder(CustomEncodingManager.CUSTOM_CAR);
+
+        QueryResult qr = locationIndex.findClosest(latitude, longitude, EdgeFilter.ALL_EDGES);
+        EdgeIteratorState edge = qr.getClosestEdge();
+        if (edge != null) {
+            long existingFlags = edge.getFlags();
+            edge.setFlags(customCarEncoder.setAccess(existingFlags, false, false));
+
+            existingFlags = edge.getFlags();
+            edge.setFlags(customCarEncoder.setSpeed(existingFlags, 0));
+
+            existingFlags = edge.getFlags();
+            edge.setFlags(customCarEncoder.setDouble(existingFlags, CustomCarFlagEncoder.CUSTOM_SPEED_KEY, 0));
+        }
+    }
+
     public void loadTrafficData(String startDate, String endDate, boolean isTrafficConsidered) {
         LocationIndex locationIndex = getLocationIndex();
         FlagEncoder customCarEncoder = getEncodingManager().getEncoder(CustomEncodingManager.CUSTOM_CAR);

@@ -7,6 +7,7 @@ import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.NamingManager;
 import javax.sql.DataSource;
+import java.awt.geom.Point2D;
 import java.util.Hashtable;
 
 /**
@@ -56,6 +57,12 @@ public class GraphHopperRoutingMain {
         if (isTrafficConsidered || Consts.STORE_EXTRA_CUSTOM_SPEED) {
             hopper.loadTrafficData(startDate, endDate, isTrafficConsidered);
         }
+
+        //block Lazienkowski bridge
+        Point2D.Double lazienkowskiEWLineCoordinates = Utils.getLazienkowskiEWLineCoordinates();
+        Point2D.Double lazienkowskiWELineCoordinates = Utils.getLazienkowskiWELineCoordinates();
+        hopper.blockEdge(lazienkowskiEWLineCoordinates.getX(), lazienkowskiEWLineCoordinates.getY());
+        hopper.blockEdge(lazienkowskiWELineCoordinates.getX(), lazienkowskiWELineCoordinates.getY());
 
         new Gui(hopper, startDate, endDate, isTrafficConsidered, resultsFileName);
 

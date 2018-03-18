@@ -1,3 +1,4 @@
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 /**
@@ -26,4 +27,11 @@ public class Utils {
         return warsawBridges;
     }
 
+    public static Point2D.Double getLazienkowskiWELineCoordinates() {
+        return new Point2D.Double(52.225278, 21.049167);
+    }
+
+    public static Point2D.Double getLazienkowskiEWLineCoordinates() {
+        return new Point2D.Double(52.225451, 21.049225);
+    }
 }
